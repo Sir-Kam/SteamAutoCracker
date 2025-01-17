@@ -1157,8 +1157,6 @@ try: # Handles Python errors to write them to a log file so they can be reported
     if config["Preferences"]["UpdateOption"] == "1":
         CheckUpdates()
 
-    print(root.winfo_reqwidth().__str__() + " " + root.winfo_reqheight().__str__())
-
     ##root.geometry("636x555")
 
     # Start main loop

@@ -1132,7 +1132,7 @@ try: # Handles Python errors to write them to a log file so they can be reported
     #tk.Label(root, text="").pack()
 
     # Logs scroll text widget
-    logs_text = tk.Text(root, height=15, width=100)
+    logs_text = tk.Text(root, height=15, width=100, font='TkFixedFont')
     logs_text.pack(pady=10, padx=10)
 
     text = f"SteamAutoCracker GUI v{VERSION} by BigBoiCJ"

@@ -1,29 +1,31 @@
+import traceback
+import requests
+import configparser
+import json
+import os
+import subprocess
+from sac_lib.get_file_version import GetFileVersion
+import shutil
+from time import sleep
+from sys import exit
+import typing
+
+
+
+
 try: # Handles Python errors to write them to a log file so they can be reported and fixed more easily.
+    
     ## Replaced by 'ttkbootstrap' for [easier] themes
     from tkinter import ttk, filedialog, font, Tk
     from tkinterdnd2 import DND_FILES, TkinterDnD
-    
     from script_constants import *
-    
     #from tk_gui import *
-
     ## Used for theming/coloring configuration for the UI
-    import ttkbootstrap
+    #import ttkbootstrap
     import ttkbootstrap as tk
-
     from tk_scroll_frame import ScrollFrame
+   
 
-    import traceback
-    import requests
-    import configparser
-    import json
-    import os
-    import subprocess
-    from sac_lib.get_file_version import GetFileVersion
-    import shutil
-    from time import sleep
-    from sys import exit
-    import typing
 
     folder_path = ""
     appID = 0
@@ -40,9 +42,20 @@ try: # Handles Python errors to write them to a log file so they can be reported
             self.config: configparser.ConfigParser
             
             # Style ttk
-            self.style: ttkbootstrap.Style
+            self.style: tk.Style
             
-            self.AllThemes: dict[str, dict[str, typing.Any]] = ttkbootstrap.themes.standard.STANDARD_THEMES
+            
+            AllFonts: dict[str, font.Font] = {
+                "DEFAULT_FONT": None,
+                "FONT2": None,
+                "FONT3": None,
+                "FONT4": None,
+                "FONT_APP_ENTRY": None,
+            }
+            
+            self.AllFonts = AllFonts
+            
+            self.AllThemes: dict[str, dict[str, typing.Any]] = tk.themes.standard.STANDARD_THEMES
             self.ThemeFilter = ('cosmo', 'darkly', 'cyborg')
             self.ThemeAliases = ('light', 'dark', 'black')
             self.ThemesSubset = dict([t for t in self.AllThemes.items() if t[0] in self.ThemeFilter])
@@ -66,38 +79,28 @@ try: # Handles Python errors to write them to a log file so they can be reported
         def init_ui(self):
             from tk_gui import Root
             self.main = Root(self)
+            self.main.attributes('-alpha', 0.0)
+            self.main.iconbitmap("./imgs/icon_hashtag.ico")
             
             # Style ttk
-            self.style = ttkbootstrap.Style(theme=self.config["Preferences"]["ThemeOption"])
+            self.style = tk.Style(theme=self.config["Preferences"]["ThemeOption"])
             self.ApplyStyle()
-
-            self.DEFAULT_FONT = font.nametofont('TkTextFont')
-            self.FONT2 = self.DEFAULT_FONT.copy()
-            self.FONT2.config(size=15)
-            self.FONT3 = self.DEFAULT_FONT.copy()
-            self.FONT3.config(size=12)
-            self.FONT4 = self.DEFAULT_FONT.copy()
-            self.FONT4.config(size=8)
-            self.FONT_APP_ENTRY = self.DEFAULT_FONT.copy()
-            self.FONT_APP_ENTRY.config(size=10)
             
-            """
-            baseRefScreenRes = (2560, 1440)
-            baseRefWinSize = (500.0, 700.0)
-            baseRefWinMinSize = (400, 400)
-            baseScale = [
-                baseRefScreenRes[0] / baseRefWinSize[0],
-                baseRefScreenRes[1] / baseRefWinSize[1]
-            ]
-            winSize = (root.winfo_screenwidth(), root.winfo_screenheight())
-            scaledWinSize = (round(winSize[0] / baseScale[0]), round(winSize[1] / baseScale[1]))
-            root.wm_maxsize(round(winSize[0] / 4.0), round(winSize[1] / 1.25))
-            root.minsize(baseRefWinMinSize[0], baseRefWinMinSize[1])
-            """
+            self.AllFonts["DEFAULT_FONT"] = font.nametofont('TkTextFont')
+            self.AllFonts["FONT2"] = self.AllFonts["DEFAULT_FONT"].copy()
+            self.AllFonts["FONT2"].config(size=15)
+            self.AllFonts["FONT3"] = self.AllFonts["DEFAULT_FONT"].copy()
+            self.AllFonts["FONT3"].config(size=12)
+            self.AllFonts["FONT4"] = self.AllFonts["DEFAULT_FONT"].copy()
+            self.AllFonts["FONT4"].config(size=8)
+            self.AllFonts["FONT_APP_ENTRY"] = self.AllFonts["DEFAULT_FONT"].copy()
+            self.AllFonts["FONT_APP_ENTRY"].config(size=10)
             
             self.main.post_init()
             self.main.update()
             self.UpdateSelectedCrackDisplay()
+            
+            self.main.attributes('-alpha', 1.0)
             
             self.main.mainloop()
 
@@ -678,9 +681,9 @@ try: # Handles Python errors to write them to a log file so they can be reported
         # ----- Crack List -----
 
         crackList = { # A list of all selectable cracks
-            "game_ali213": ["ALI213 (Game)", "The ALI213 crack is simple and can crack a full game. It will unlock all DLCs and will also prevent the game from connecting to the internet.\nThe game folder can then freely be shared with others as the crack is contained inside the game folder.\nIf it doesn't work, consider using Goldberg instead."],
-            "game_goldberg": ["Goldberg (Game)", "The Goldberg (experimental) crack is similar to ALI213's one.\nIt is open-source, which is better, but might not work with older games, due to SAC's current partial support.\nThis crack will however work better for recent games, where ALI213 could fail.\nInternet connection is blocked, but LAN is enabled."],
-            "dlc_creamapi": ["CreamAPI (DLC)", "The CreamAPI crack will unlock all DLCs but will not crack the main game. It is meant to be used with bought copies of a game, with your real Steam account.\nOnly use this is you have purchased the game on Steam and want to unlock its DLCs.\nWill not work for most online games, but might exceptionally work with some like Beat Saber."]
+            "game_ali213": ["ALI213 (Game)", "The ALI213 crack is simple and can crack a full game. It will unlock all DLCs and will also prevent the game from connecting to the internet. The game folder can then freely be shared with others as the crack is contained inside the game folder. If it doesn't work, consider using Goldberg instead."],
+            "game_goldberg": ["Goldberg (Game)", "The Goldberg (experimental) crack is similar to ALI213's one. It is open-source, which is better, but might not work with older games, due to SAC's current partial support. This crack will however work better for recent games, where ALI213 could fail. Internet connection is blocked, but LAN is enabled."],
+            "dlc_creamapi": ["CreamAPI (DLC)", "The CreamAPI crack will unlock all DLCs but will not crack the main game. It is meant to be used with bought copies of a game, with your real Steam account. Only use this is you have purchased the game on Steam and want to unlock its DLCs. Will not work for most online games, but might exceptionally work with some like Beat Saber."]
         }
 
         crackListSteamless = { # Whether to use Steamless with a specific crack. True = use Steamless
@@ -690,19 +693,22 @@ try: # Handles Python errors to write them to a log file so they can be reported
         }
 
         def DisplayCrackList(self):
+            from tk_gui import Autosized_TLabel
             top = tk.Toplevel(self.main)
             top.title(f"SteamAutoCracker GUI v{VERSION} - Crack List")
-            top.resizable(False, False) # Prevents resizing the window's width and height
-            biggerFont = self.DEFAULT_FONT.copy()
+            top.resizable(True, True) # Prevents resizing the window's width and height
+            biggerFont = self.AllFonts["DEFAULT_FONT"].copy()
             biggerFont.config(size=10)
-            ttk.Label(top, text= LBL_CRACKLIST, font=self.FONT2).pack(padx=200, pady=(10,10), anchor="center")
+            ttk.Label(top, text= LBL_CRACKLIST, font=self.AllFonts["FONT2"]).pack(pady=(10,10), anchor="center")
 
             ttk.Button(top, text=BTN_RESETCRACK, padding=0, command=self.ResetCrackListButton).pack(pady=(0,0), anchor="center")
 
+            scrollFrame = ScrollFrame(top)
+
             # Selected crack (SelectedCrack)
-            ttk.Label(top, text=LBL_SELECTEDCRACK, font=self.FONT3, padding=0).pack(padx=(6, 0), pady=(10,0), anchor="w")
-            settings_frame1 = ttk.Frame(top)
-            settings_frame1.pack(padx=(15, 0), pady=(0, 0), anchor="w")
+            ttk.Label(scrollFrame.viewPort, text=LBL_SELECTEDCRACK, font=self.AllFonts["FONT3"], padding=0).pack(padx=(6, 0), pady=(10,0), anchor="w")
+            settings_frame1 = ttk.Frame(scrollFrame.viewPort)
+            settings_frame1.pack(padx=(15, 0), pady=(0, 0), anchor="w", fill='both', side='top', expand=True)
 
             ## Radio
             global SelectedCrack_var
@@ -710,14 +716,16 @@ try: # Handles Python errors to write them to a log file so they can be reported
             SelectedCrack_var.set(self.config["Crack"]["SelectedCrack"])
             rowNum = 0
             for k, v in self.crackList.items():
-                ttk.Radiobutton(settings_frame1, text=v[0], variable=SelectedCrack_var, value=k, command=lambda: self.UpdateSelectedCrack()).grid(row=rowNum, column=0, sticky="w")
+                ttk.Radiobutton(settings_frame1, text=v[0], variable=SelectedCrack_var, value=k, command=lambda: self.UpdateSelectedCrack()).pack(anchor="w")
                 rowNum += 1
                 if len(v) > 1: # Contains a description
-                    tk.Label(settings_frame1, text=v[1], font=self.FONT4, foreground="#575757", wraplength=700, justify="left").grid(row=rowNum, column=0, sticky="w", ipadx=20)
+                    Autosized_TLabel(settings_frame1, self.AllFonts["FONT4"], text=v[1], foreground="#575757", wraplength=700, justify="left").pack(ipadx=20, anchor="w", fill="both", side="top", expand=True)
                     rowNum += 1
 
             # Spacer
-            tk.Label(top, text="").pack()
+            tk.Label(scrollFrame.viewPort, text="").pack()
+            
+            scrollFrame.pack(side="top", fill="both", expand=True)
 
             top.grab_set() # Catches all interactions, prevents the user from interacting with the root window
 
@@ -741,7 +749,7 @@ try: # Handles Python errors to write them to a log file so they can be reported
         # ---------------------------------------
 
         def UpdateConfig(self):
-            with open("config.ini", "w", encoding="utf-8") as configFile:
+            with open(CONFIG, "w", encoding="utf-8") as configFile:
                 self.config.write(configFile)
 
         def UpdateConfAndUI(self, section: str, key: str, value: str):
@@ -805,7 +813,7 @@ try: # Handles Python errors to write them to a log file so they can be reported
         def ReloadConfig(self):
             self.config = configparser.ConfigParser()
 
-            if self.config.read("config.ini") == []:
+            if self.config.read(CONFIG) == []:
                 # Config doesn't exist, create it
                 self.ResetConfig()
             else:
@@ -841,57 +849,31 @@ try: # Handles Python errors to write them to a log file so they can be reported
             self.DisplayUpdate()
 
         def DisplayUpdate(self):
-            top = tk.Toplevel(self.main)
-            top.title(TITLE_UPDATE)
-            top.resizable(False, False) # Prevents resizing the window's width and height
-            biggerFont = self.DEFAULT_FONT.copy()
-            biggerFont.config(size=10)
-            ttk.Label(top, text=LBL_TITLEUPDATE, font=self.FONT2).pack(padx=200, pady=(10,10), anchor="center")
-            ttk.Label(top, text=LBL_UPDATEAVAILCONFIRM, font=biggerFont, padding=0).pack(padx=(6, 0), pady=(10,0), anchor="w")
-            ttk.Label(top, text=LBL_VERSIONCUR, font=biggerFont, padding=0).pack(padx=(6, 0), pady=(15,0), anchor="w")
-            ttk.Label(top, text=LBL_VERSIONNEW.format(version=latestversion), font=biggerFont, padding=0).pack(padx=(6, 0), pady=(0,10), anchor="w")
-
-            updateDisplayButtonsFrame = ttk.Frame(top)
-            updateDisplayButtonsFrame.pack(pady=(5,20))
-
-            global updateDisplayButtonUpdate
-            updateDisplayButtonUpdate = ttk.Button(updateDisplayButtonsFrame, text=BTN_UPDATE, command=self.UpdateSAC, padding=3)
-            updateDisplayButtonUpdate.grid(row=0, column=0)
-
-            global updateDisplayButtonCopy
-            updateDisplayButtonCopy = ttk.Button(updateDisplayButtonsFrame, text=BTN_COPYRELURL, command=self.CopyReleaseURL, padding=3)
-            updateDisplayButtonCopy.grid(row=0, column=1, padx=(50,0))
-
-            global updateDisplayButtonClose
-            updateDisplayButtonClose = ttk.Button(updateDisplayButtonsFrame, text=BTN_DONTUPDATE, command=top.destroy, padding=3)
-            updateDisplayButtonClose.grid(row=0, column=2, padx=(50,0))
-
-            global updateDisplayStatusLabel
-            updateDisplayStatusLabel = ttk.Label(top, text="", font=biggerFont, padding=0)
-
-            top.grab_set() # Catches all interactions, prevents the user from interacting with the root window
-
+            from tk_gui import UpdatePopup
+            top = UpdatePopup(latestversion, app=app)
+            top.post_init()
+            
             global updateDisplayTop
             updateDisplayTop = top
 
         def UpdateSAC(self):
-            updateDisplayButtonUpdate.config(state=tk.DISABLED)
-            updateDisplayButtonCopy.config(state=tk.DISABLED)
-            updateDisplayButtonClose.config(state=tk.DISABLED)
+            updateDisplayTop.updateDisplayButtonUpdate.config(state=tk.DISABLED)
+            updateDisplayTop.updateDisplayButtonCopy.config(state=tk.DISABLED)
+            updateDisplayTop.updateDisplayButtonClose.config(state=tk.DISABLED)
 
-            updateDisplayStatusLabel.pack(pady=(0,20), anchor="center")
-            updateDisplayStatusLabel.config(text=LBL_DLUPDATERPLSWAIT)
+            updateDisplayTop.updateDisplayStatusLabel.pack(pady=(0,20), anchor="center")
+            updateDisplayTop.updateDisplayStatusLabel.config(text=LBL_DLUPDATERPLSWAIT)
             self.main.update()
 
             # Check for the existence of a leftover autoupdater
-            if os.path.isfile("steam_auto_cracker_gui_autoupdater.exe"):
+            if os.path.isfile(AUTOUPDATER_EXE):
                 try:
-                    os.remove("steam_auto_cracker_gui_autoupdater.exe")
+                    os.remove(AUTOUPDATER_EXE)
                 except Exception: # In case the file is locked for example
-                    updateDisplayButtonUpdate.config(state=tk.NORMAL)
-                    updateDisplayButtonCopy.config(state=tk.NORMAL)
-                    updateDisplayButtonClose.config(state=tk.NORMAL)
-                    updateDisplayStatusLabel.config(text=LBL_UDATEERROR)
+                    updateDisplayTop.updateDisplayButtonUpdate.config(state=tk.NORMAL)
+                    updateDisplayTop.updateDisplayButtonCopy.config(state=tk.NORMAL)
+                    updateDisplayTop.updateDisplayButtonClose.config(state=tk.NORMAL)
+                    updateDisplayTop.updateDisplayStatusLabel.config(text=LBL_UDATEERROR)
                     self.main.update()
                     return
                 print("Removed leftover autoupdater")
@@ -902,17 +884,17 @@ try: # Handles Python errors to write them to a log file so they can be reported
 
             req = self.SACRequest(GITHUB_AUTOUPDATER, "DownloadAutoupdater").req
 
-            updateDisplayStatusLabel.config(text=LBL_UPDATERSAVING)
+            updateDisplayTop.updateDisplayStatusLabel.config(text=LBL_UPDATERSAVING)
             self.main.update()
 
-            with open("steam_auto_cracker_gui_autoupdater.exe", mode="wb") as file:
+            with open(AUTOUPDATER_EXE, mode="wb") as file:
                 file.write(req.content)
 
-            updateDisplayStatusLabel.config(text=LBL_UPDATERINSTALLED)
+            updateDisplayTop.updateDisplayStatusLabel.config(text=LBL_UPDATERINSTALLED)
             self.main.update()
 
             sleep(3)
-            subprocess.Popen("steam_auto_cracker_gui_autoupdater.exe") # Open SAC GUI Autoupdater
+            subprocess.Popen(AUTOUPDATER_EXE) # Open SAC GUI Autoupdater
             exit()
 
         def CopyReleaseURL(self):

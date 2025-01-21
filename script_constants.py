@@ -7,6 +7,8 @@ HIGH_DLC_WARNING = 125
 
 EXTS_TO_REPLACE = (".txt", ".ini", ".cfg")
 
+CONFIG = "config.ini"
+AUTOUPDATER_EXE = "steam_auto_cracker_gui_autoupdater.exe"
 OPCREDIT = "BigBoiCJ"
 GITHUB_RAWHOST = "raw.githubusercontent.com"
 GITHUB_APIHOST = "api.github.com"
@@ -14,7 +16,9 @@ GITHUB_ACCREPOSTR = "BigBoiCJ/SteamAutoCracker"
 GITHUB_ALLRELEASESJSON = f"https://{GITHUB_APIHOST}/repos/{GITHUB_ACCREPOSTR}/releases"
 GITHUB_LATESTRELEASESJSON = f"{GITHUB_ALLRELEASESJSON}/latest"
 GITHUB_LATESTVERSIONJSON = f"https://{GITHUB_RAWHOST}/{GITHUB_ACCREPOSTR}/autoupdater/latestversion.json"
-GITHUB_AUTOUPDATER = f"https://{GITHUB_RAWHOST}/{GITHUB_ACCREPOSTR}/autoupdater/steam_auto_cracker_gui_autoupdater.exe"
+GITHUB_AUTOUPDATER = f"https://{GITHUB_RAWHOST}/{GITHUB_ACCREPOSTR}/autoupdater/{AUTOUPDATER_EXE}"
+
+
 
 ##
 

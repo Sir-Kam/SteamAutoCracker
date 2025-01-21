@@ -1,16 +1,18 @@
-if __name__ != "__main__":
-    from tkinter import ttk, font
-    from tkinterdnd2 import TkinterDnD
-    ## Used for theming/coloring configuration for the UI
-    import ttkbootstrap as tk
-    from tk_scroll_frame import ScrollFrame 
-    import traceback
-    import typing
 
-    #from steam_auto_cracker_gui import *
-    from script_constants import *
+import traceback
+import typing
 
-    from steam_auto_cracker_gui import App
+## Used for theming/coloring configuration for the UI
+import ttkbootstrap as tk
+
+from tkinter import ttk, font
+from tkinterdnd2 import TkinterDnD
+from tk_scroll_frame import ScrollFrame
+
+#from steam_auto_cracker_gui import *
+from script_constants import *
+
+from steam_auto_cracker_gui import App
 
 
 ThemeOption_var: tk.StringVar
@@ -24,6 +26,8 @@ BakSuffix_var: tk.StringVar
 RetryDelay_var: tk.StringVar
 RetryMax_var: tk.StringVar
 BypassGameVerification_var: tk.StringVar
+
+
 
 
 
@@ -76,16 +80,6 @@ class MainPage(tk.Frame):
         self.title = f"SteamAutoCracker GUI v{VERSION}"
 
         self.window = window
-
-        self.DEFAULT_FONT = font.nametofont('TkTextFont')
-        self.FONT2 = self.DEFAULT_FONT.copy()
-        self.FONT2.config(size=15)
-        self.FONT3 = self.DEFAULT_FONT.copy()
-        self.FONT3.config(size=12)
-        self.FONT4 = self.DEFAULT_FONT.copy()
-        self.FONT4.config(size=8)
-        self.FONT_APP_ENTRY = self.DEFAULT_FONT.copy()
-        self.FONT_APP_ENTRY.config(size=10)
         
         self.lblTItle: ttk.Label
         self.lblAuthor: ttk.Label
@@ -94,7 +88,7 @@ class MainPage(tk.Frame):
         
         self.settingsBtn: Settings_TButton
         
-        self.container: ScrollFrame
+        self.scrollFrame: ScrollFrame
         
         self.selectFolderBtn: ttk.Button
         self.selectedFolderFrame: tk.Frame
@@ -118,25 +112,25 @@ class MainPage(tk.Frame):
         self.logs_text: tk.Text
 
     def post_init(self):
-        self.lblTitle = ttk.Label(self, text=TITLE_MAIN, font=self.FONT2, padding=0).pack(pady=(10, 0), anchor="center")
+        self.lblTitle = ttk.Label(self, text=TITLE_MAIN, font=self.window.app.AllFonts["FONT2"], padding=0).pack(pady=(10, 0), anchor="center")
         self.lblAuthor = ttk.Label(self, text=f"by {OPCREDIT}", padding=0).pack(pady=(0, 0), anchor="center")
 
         self.updatesButton = ttk.Button(self, text=BTN_UPDATECHECK, command=self.window.app.CheckUpdates, padding=0)
         self.updatesButton.place(relx=1, rely=0, anchor='ne')
 
-        scrollContainer = self.container = ScrollFrame(self)
-
         self.settingsBtn = Settings_TButton(self, height=24, width=24)
         self.settingsBtn.place(x=2, y=2, anchor="nw")
 
-        ttk.Separator(self, orient='horizontal').pack(fill="x", padx=220)
+        #ttk.Separator(self, orient='horizontal').pack(fill="x", padx=220)
+        
+        self.scrollFrame = ScrollFrame(self)
 
         # Select folder fields
-        tk.Label(self, text=LBL_SELECTFOLDER,).pack(pady=(0, 5), anchor="center")
-        self.selectFolderBtn = ttk.Button(self, text=BTN_SELECTFOLDER, command=self.window.app.handle_folder_selection)
+        tk.Label(self.scrollFrame.viewPort, text=LBL_SELECTFOLDER,).pack(pady=(0, 5), anchor="center")
+        self.selectFolderBtn = ttk.Button(self.scrollFrame.viewPort, text=BTN_SELECTFOLDER, command=self.window.app.handle_folder_selection)
         self.selectFolderBtn.pack(pady=(0, 10))
 
-        self.selectedFolderFrame = tk.Frame(self) # This frame will contain the label. This is so we can resize the root window properly when the text is empty.
+        self.selectedFolderFrame = tk.Frame(self.scrollFrame.viewPort) # This frame will contain the label. This is so we can resize the root window properly when the text is empty.
         self.selectedFolderFrame.pack()
         tk.Frame(self.selectedFolderFrame, width=1, height=1).pack() # 1x1 frame, else selectedFolderFrame will not update its size after it is emptied (by selectedFolderLabel.pack_forget)
         self.selectedFolderLabel = tk.Label(self.selectedFolderFrame, text="", wraplength=700)
@@ -144,7 +138,7 @@ class MainPage(tk.Frame):
         self.selectedFolderLabel.pack_forget()
 
         # Enter game name or appID fields
-        self.frameGame = ttk.Frame(self) # Main frame for the game
+        self.frameGame = ttk.Frame(self.scrollFrame.viewPort) # Main frame for the game
         self.frameGame.pack(pady=(5, 0), anchor="center")
 
         tk.Frame(self.frameGame, width=1, height=1).pack() # 1x1 frame, else frameGame will not update its size after it is emptied (by frameGame2.pack_forget)
@@ -155,7 +149,7 @@ class MainPage(tk.Frame):
 
         self.frame4 = ttk.Frame(self.frameGame2)
         self.frame4.pack(pady=(5, 0), anchor="center")
-        self.gameNameEntry = tk.Entry(self.frame4, width=35, font=self.FONT_APP_ENTRY)
+        self.gameNameEntry = tk.Entry(self.frame4, width=35, font=self.window.app.AllFonts["FONT_APP_ENTRY"])
         self.gameNameEntry.grid(row=0, column=0, ipady=5)
         self.searchGameButton = ttk.Button(self.frame4, text=BTN_SEARCH, padding=5, command=self.window.app.search_game)
         self.searchGameButton.grid(row=0, column=1, padx=(10, 0))
@@ -167,7 +161,7 @@ class MainPage(tk.Frame):
         self.frameGame2.pack_forget() # Hide the elements, but preserves their location thanks to frameGame still being packed but empty
 
         # Crack fields
-        self.frameCrack = ttk.Frame(self)
+        self.frameCrack = ttk.Frame(self.scrollFrame.viewPort)
         self.frameCrack.pack(pady=(15, 0), anchor="center")
         tk.Frame(self.frameCrack, width=1, height=1).pack() # 1x1 frame
         self.frameCrack2 = ttk.Frame(self.frameCrack)
@@ -178,8 +172,8 @@ class MainPage(tk.Frame):
         tk.Label(self.selectedCrackFrame, text=LBL_SELECTEDCRACK).grid(row=0, column=0)
         self.selectCrackButton = ttk.Button(self.selectedCrackFrame, text=BTN_NONE, padding=5, command=self.window.app.DisplayCrackList)
         self.selectCrackButton.grid(row=0, column=1, padx=(10, 0))
-        self.crackGameButton = ttk.Button(self.frameCrack2, text=BTN_CRACKGAME, padding=8, command=self.window.app.CrackGame)
-        self.crackGameButton.pack(pady=(10, 0))
+        self.crackGameButton = ttk.Button(self.selectedCrackFrame, text=BTN_CRACKGAME, padding=5, command=self.window.app.CrackGame)
+        self.crackGameButton.grid(row=0, column=2, padx=(10, 0))
 
         self.frameCrack2.pack_forget() # Hide the elements, but preserves their location thanks to frameCrack still being packed but empty
 
@@ -187,8 +181,8 @@ class MainPage(tk.Frame):
         #tk.Label(root, text="").pack()
 
         # Logs scroll text widget
-        self.logs_text = tk.Text(self, height=15, width=100, font='TkFixedFont')
-        self.logs_text.pack(pady=10, padx=10)
+        self.logs_text = tk.Text(self, height=10, width=100, font='TkFixedFont')
+        self.logs_text.pack(pady=10, padx=10, fill='both', side='bottom', expand=True)
 
         text = f"{TITLE_MAIN} by {OPCREDIT}"
         buf = ""
@@ -198,7 +192,7 @@ class MainPage(tk.Frame):
         self.logs_text.insert("1.0", f"{buf}\n{text}\n{buf}")
         self.logs_text.config(state=tk.DISABLED) # Prevents users from editing the text inside logs_text
         
-        scrollContainer.pack(side="top", fill="both", expand=True)
+        self.scrollFrame.pack(side="top", fill="both", expand=True)
 
 
 class SettingsPage(tk.Frame):
@@ -208,18 +202,8 @@ class SettingsPage(tk.Frame):
         
         self.window = window
 
-        DEFAULT_FONT = font.nametofont('TkTextFont')
-        FONT2 = DEFAULT_FONT.copy()
-        FONT2.config(size=15)
-        FONT3 = DEFAULT_FONT.copy()
-        FONT3.config(size=12)
-        FONT4 = DEFAULT_FONT.copy()
-        FONT4.config(size=8)
-        FONT_APP_ENTRY = DEFAULT_FONT.copy()
-        FONT_APP_ENTRY.config(size=10)
-
-        ttk.Label(self, text= LBL_TITLESETTINGS, font=FONT2).pack(pady=(10,10), anchor="center")
-        ttk.Button(self, text=BTN_RESETSETTINGS, padding=0, command=self.window.app.ResetSettingsButton).pack(pady=(0,0), anchor="center")
+        self.lblTitle = ttk.Label(self, text= LBL_TITLESETTINGS, font=self.window.app.AllFonts["FONT2"]).pack(pady=(10,10), anchor="center")
+        self.btnReset = ttk.Button(self, text=BTN_RESETSETTINGS, padding=0, command=self.window.app.ResetSettingsButton).pack(pady=(0,0), anchor="center")
 
         self.homeBtn = Home_TButton(self, height=24, width=24)
         self.homeBtn.place(x=2, y=2, anchor="nw")
@@ -227,7 +211,7 @@ class SettingsPage(tk.Frame):
         self.scrollFrame = ScrollFrame(self)
 
         # Theme options (ThemeOption)
-        ttk.Label(self.scrollFrame.viewPort, text=LBL_THEME, font=FONT3, padding=0).pack(padx=(6, 0), pady=(10,0), anchor="w")
+        ttk.Label(self.scrollFrame.viewPort, text=LBL_THEME, font=self.window.app.AllFonts["FONT3"], padding=0).pack(padx=(6, 0), pady=(10,0), anchor="w")
         settings_frame_theme = ttk.Frame(self.scrollFrame.viewPort)
         settings_frame_theme.pack(padx=(15, 0), pady=(0, 0), anchor="w", fill='x')
 
@@ -253,8 +237,8 @@ class SettingsPage(tk.Frame):
         settings_frame_theme.grid_rowconfigure(tuple(range(3)), weight=1)
 
         # Update options (UpdateOption)
-        ttk.Label(self.scrollFrame.viewPort, text=LBL_UPDATES, font=FONT3, padding=0).pack(padx=(6, 0), pady=(10,0), anchor="w")
-        updateSubNote = Autosized_TLabel(self.scrollFrame.viewPort, FONT4, foreground="#575757", text=LBL_UPDATESDESC)
+        ttk.Label(self.scrollFrame.viewPort, text=LBL_UPDATES, font=self.window.app.AllFonts["FONT3"], padding=0).pack(padx=(6, 0), pady=(10,0), anchor="w")
+        updateSubNote = Autosized_TLabel(self.scrollFrame.viewPort, self.window.app.AllFonts["FONT4"], foreground="#575757", text=LBL_UPDATESDESC)
         updateSubNote.pack(padx=(0, 6), pady=(0,0), anchor="w", fill="both", side="top", expand=True)
         settings_frame_updates = ttk.Frame(self.scrollFrame.viewPort)
         settings_frame_updates.pack(padx=(15, 0), pady=(0, 0), anchor="w")
@@ -267,21 +251,23 @@ class SettingsPage(tk.Frame):
         ttk.Radiobutton(settings_frame_updates, text=RADIOBTN_UPDATECHECKAUTO, variable=UpdateOption_var, value="1", command=lambda: self.window.app.UpdateConfigKey("Preferences", "UpdateOption", UpdateOption_var.get())).grid(sticky="w")
 
         # Crack approach (CrackOption)
-        ttk.Label(self.scrollFrame.viewPort, text=LBL_CRACKMETHOD, font=FONT3, padding=0).pack(padx=(6, 0), pady=(10,0), anchor="w")
+        ttk.Label(self.scrollFrame.viewPort, text=LBL_CRACKMETHOD, font=self.window.app.AllFonts["FONT3"], padding=0).pack(padx=(6, 0), pady=(10,0), anchor="w")
         settings_frame1 = ttk.Frame(self.scrollFrame.viewPort)
-        settings_frame1.pack(padx=(15, 0), pady=(0, 0), anchor="w")
+        settings_frame1.pack(padx=(15, 0), pady=(0, 0), anchor="w", fill='x', expand=True)
 
         ## Radio
         global CrackOption_var
         CrackOption_var = tk.StringVar()
         CrackOption_var.set(self.window.app.config["Preferences"]["CrackOption"])
-        ttk.Radiobutton(settings_frame1, text=RADIOBTN_CRACKAUTO, variable=CrackOption_var, value="0", command=lambda: self.window.app.UpdateConfigKey("Preferences", "CrackOption", CrackOption_var.get())).grid(row=0, column=0, sticky="w")
-        ttk.Radiobutton(settings_frame1, text=RADIOBTN_CRACKCONFIGDLLGAMEDIR, variable=CrackOption_var, value="1", command=lambda: self.window.app.UpdateConfigKey("Preferences", "CrackOption", CrackOption_var.get())).grid(row=1, column=0, sticky="w")
-        ttk.Radiobutton(settings_frame1, text=RADIOBTN_CRACKCONFIGDLLTOOLDIR, variable=CrackOption_var, value="2", command=lambda: self.window.app.UpdateConfigKey("Preferences", "CrackOption", CrackOption_var.get())).grid(row=2, column=0, sticky="w")
+        ttk.Radiobutton(settings_frame1, text=RADIOBTN_CRACKAUTO, variable=CrackOption_var, value="0", command=lambda: self.window.app.UpdateConfigKey("Preferences", "CrackOption", CrackOption_var.get())).pack(anchor="w", pady=0)
+        ttk.Radiobutton(settings_frame1, text="Alternate Method 1", variable=CrackOption_var, value="1", command=lambda: self.window.app.UpdateConfigKey("Preferences", "CrackOption", CrackOption_var.get())).pack(anchor="w", pady=0)
+        Autosized_TLabel(settings_frame1, text=RADIOBTN_CRACKCONFIGDLLGAMEDIR, font=self.window.app.AllFonts["FONT4"], foreground="#575757").pack(anchor="w", fill='x', expand=True, pady=0)
+        ttk.Radiobutton(settings_frame1, text="Alternate Method 2", variable=CrackOption_var, value="2", command=lambda: self.window.app.UpdateConfigKey("Preferences", "CrackOption", CrackOption_var.get())).pack(anchor="w", pady=0)
+        Autosized_TLabel(settings_frame1, text=RADIOBTN_CRACKCONFIGDLLGAMEDIR, font=self.window.app.AllFonts["FONT4"], foreground="#575757").pack(anchor="w", fill='x', expand=True, pady=0)
 
         # Steamless (Steamless)
-        ttk.Label(self.scrollFrame.viewPort, text=LBL_STEAMLESS, font=FONT3, padding=0).pack(padx=(6, 0), pady=(10,0), anchor="w")
-        ttk.Label(self.scrollFrame.viewPort, text=LBL_STEAMLESSDESC, font=FONT4, padding=0, foreground="#575757", wraplength=600).pack(padx=(6, 0), pady=(0,0), anchor="w")
+        ttk.Label(self.scrollFrame.viewPort, text=LBL_STEAMLESS, font=self.window.app.AllFonts["FONT3"], padding=0).pack(padx=(6, 0), pady=(10,0), anchor="w")
+        Autosized_TLabel(self.scrollFrame.viewPort, text=LBL_STEAMLESSDESC, font=self.window.app.AllFonts["FONT4"], padding=0, foreground="#575757").pack(padx=(6, 0), pady=(0,0), anchor="w", fill='x', expand=True)
 
         settings_frame2 = ttk.Frame(self.scrollFrame.viewPort)
         settings_frame2.pack(padx=(15, 0), pady=(0, 10), anchor="w")
@@ -294,8 +280,8 @@ class SettingsPage(tk.Frame):
         ttk.Radiobutton(settings_frame2, text=RADIOBTN_STEAMLESSYES, variable=Steamless_var, value="1", command=lambda: self.window.app.UpdateConfigKey("Preferences", "Steamless", Steamless_var.get())).grid(row=1, column=0, sticky="w")
 
         # FileNames
-        ttk.Label(self.scrollFrame.viewPort, text=LBL_FILENAMES, font=FONT3, padding=0).pack(padx=(6, 0), pady=(10,0), anchor="w")
-        ttk.Label(self.scrollFrame.viewPort, text=LBL_FILENAMESDESC, font=FONT4, padding=0, foreground="#575757", wraplength=600).pack(padx=(6, 0), pady=(0,0), anchor="w")
+        ttk.Label(self.scrollFrame.viewPort, text=LBL_FILENAMES, font=self.window.app.AllFonts["FONT3"], padding=0).pack(padx=(6, 0), pady=(10,0), anchor="w")
+        ttk.Label(self.scrollFrame.viewPort, text=LBL_FILENAMESDESC, font=self.window.app.AllFonts["FONT4"], padding=0, foreground="#575757", wraplength=600).pack(padx=(6, 0), pady=(0,0), anchor="w")
 
         fileNamesFrame = ttk.Frame(self.scrollFrame.viewPort)
         fileNamesFrame.pack(padx=(15, 0), pady=(0, 10), anchor="w", expand=True)
@@ -335,8 +321,8 @@ class SettingsPage(tk.Frame):
         fileNamesFrame.grid_columnconfigure(0, weight=50, minsize=120)
 
         # Advanced
-        ttk.Label(self.scrollFrame.viewPort, text=LBL_ADVANCED, font=FONT3, padding=0).pack(padx=(6, 0), pady=(10,0), anchor="w")
-        ttk.Label(self.scrollFrame.viewPort, text=LBL_ADVANCEDDESC, font=FONT4, padding=0, foreground="#575757", wraplength=300).pack(padx=(6, 0), pady=(0,0), anchor="w")
+        ttk.Label(self.scrollFrame.viewPort, text=LBL_ADVANCED, font=self.window.app.AllFonts["FONT3"], padding=0).pack(padx=(6, 0), pady=(10,0), anchor="w")
+        ttk.Label(self.scrollFrame.viewPort, text=LBL_ADVANCEDDESC, font=self.window.app.AllFonts["FONT4"], padding=0, foreground="#575757", wraplength=300).pack(padx=(6, 0), pady=(0,0), anchor="w")
 
         advTextFrame = ttk.Frame(self.scrollFrame.viewPort)
         advTextFrame.pack(padx=(15, 0), pady=(0, 10), anchor="w")
@@ -364,6 +350,52 @@ class SettingsPage(tk.Frame):
         advBypassGameVerification.pack(padx=(15, 0), pady=(0, 10), anchor="w")
 
         self.scrollFrame.pack(side="top", fill="both", expand=True)
+
+
+class TopLevelWindow(tk.Toplevel):
+    def __init__(self, app: App, *args, **kwargs):
+        tk.Toplevel.__init__(self, *args, **kwargs)
+        self.app = app
+
+
+class UpdatePopup(TopLevelWindow):
+    def __init__(self, latestVersion: str, *args, **kwargs):
+        TopLevelWindow.__init__(self, *args, **kwargs)
+        
+        self.latestVersion = latestVersion
+        
+        self.title(TITLE_UPDATE)
+        self.resizable(False, False)
+        
+        self.biggerFont = self.app.AllFonts["DEFAULT_FONT"].copy().config(size=10)
+        
+        self.updateDisplayButtonsFrame: ttk.Frame
+        self.updateDisplayButtonUpdate: ttk.Button
+        self.updateDisplayButtonCopy: ttk.Button
+        self.updateDisplayButtonClose: ttk.Button
+        self.updateDisplayStatusLabel: ttk.Label
+
+        
+    def post_init(self):
+        
+        ttk.Label(self, text=LBL_TITLEUPDATE, font=self.app.AllFonts["FONT2"]).pack(padx=200, pady=(10,10), anchor="center")
+        ttk.Label(self, text=LBL_UPDATEAVAILCONFIRM, font=self.biggerFont, padding=0).pack(padx=(6, 0), pady=(10,0), anchor="w")
+        ttk.Label(self, text=LBL_VERSIONCUR, font=self.biggerFont, padding=0).pack(padx=(6, 0), pady=(15,0), anchor="w")
+        ttk.Label(self, text=LBL_VERSIONNEW.format(version=self.latestVersion), font=self.biggerFont, padding=0).pack(padx=(6, 0), pady=(0,10), anchor="w")
+        
+        self.updateDisplayButtonsFrame = ttk.Frame(self)
+        self.updateDisplayButtonsFrame.pack(pady=(5,20))
+        
+        self.updateDisplayButtonUpdate = ttk.Button(self.updateDisplayButtonsFrame, text=BTN_UPDATE, command=self.app.UpdateSAC, padding=3)
+        self.updateDisplayButtonUpdate.grid(row=0, column=0)
+
+        self.updateDisplayButtonCopy = ttk.Button(self.updateDisplayButtonsFrame, text=BTN_COPYRELURL, command=self.app.CopyReleaseURL, padding=3)
+        self.updateDisplayButtonCopy.grid(row=0, column=1, padx=(50,0))
+
+        self.updateDisplayButtonClose = ttk.Button(self.updateDisplayButtonsFrame, text=BTN_DONTUPDATE, command=self.destroy, padding=3)
+        self.updateDisplayButtonClose.grid(row=0, column=2, padx=(50,0))
+
+        self.updateDisplayStatusLabel = ttk.Label(self, text="", font=self.biggerFont, padding=0)
 
 
 class Canvas_TButton(tk.Canvas):
@@ -453,9 +485,9 @@ class Settings_TButton(Canvas_TButton):
         Canvas_TButton.__init__(self, *args, **kwargs)
         self.setup(
             self.buttonSize,
-            "./windows_settings_icon.png",
+            "./imgs/windows_settings_icon.png",
             None,
-            "./windows_settings_icon-hover.png"
+            "./imgs/windows_settings_icon-hover.png"
         )
 
 
@@ -464,8 +496,8 @@ class Home_TButton(Canvas_TButton):
         Canvas_TButton.__init__(self, *args, **kwargs)
         self.setup(
             self.buttonSize,
-            "./back_64.png",
+            "./imgs/back_64.png",
             None,
-            "./back_64_hover.png",
+            "./imgs/back_64_hover.png",
         )
 

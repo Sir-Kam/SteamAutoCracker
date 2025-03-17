@@ -9,25 +9,8 @@ from tkinter import ttk, font
 from tkinterdnd2 import TkinterDnD
 from tk_scroll_frame import ScrollFrame
 
-#from steam_auto_cracker_gui import *
 from script_constants import *
-
 from steam_auto_cracker_gui import App
-
-
-ThemeOption_var: tk.StringVar
-UpdateOption_var: tk.StringVar
-CrackOption_var: tk.StringVar
-Steamless_var: tk.StringVar
-SteamApi_var: tk.StringVar
-SteamApi64_var: tk.StringVar
-GameEXE_var: tk.StringVar
-BakSuffix_var: tk.StringVar
-RetryDelay_var: tk.StringVar
-RetryMax_var: tk.StringVar
-BypassGameVerification_var: tk.StringVar
-
-
 
 
 
@@ -50,7 +33,7 @@ class Root(TkinterDnD.Tk):
         self.mainPage = MainPage(self.container, self)
 
         self.mainPage.post_init()
-        #self.settingsPage.post_init()
+        self.settingsPage.post_init()
         
         self.mainPage.grid(row=0, column=0, sticky="nsew")
         self.settingsPage.grid(row=0, column=0, sticky="nsew")
@@ -72,8 +55,6 @@ class Root(TkinterDnD.Tk):
         self.mainPage.tkraise()
 
 
-
-
 class MainPage(tk.Frame):
     def __init__(self, parent, window: Root):
         tk.Frame.__init__(self, parent)
@@ -81,7 +62,7 @@ class MainPage(tk.Frame):
 
         self.window = window
         
-        self.lblTItle: ttk.Label
+        self.lblTitle: ttk.Label
         self.lblAuthor: ttk.Label
         
         self.updatesButton: ttk.Button
@@ -118,7 +99,7 @@ class MainPage(tk.Frame):
         self.updatesButton = ttk.Button(self, text=BTN_UPDATECHECK, command=self.window.app.CheckUpdates, padding=0)
         self.updatesButton.place(relx=1, rely=0, anchor='ne')
 
-        self.settingsBtn = Settings_TButton(self, height=24, width=24)
+        self.settingsBtn = Settings_TButton(self, 31, height=31, width=31)
         self.settingsBtn.place(x=2, y=2, anchor="nw")
 
         #ttk.Separator(self, orient='horizontal').pack(fill="x", padx=220)
@@ -202,23 +183,74 @@ class SettingsPage(tk.Frame):
         
         self.window = window
 
-        self.lblTitle = ttk.Label(self, text= LBL_TITLESETTINGS, font=self.window.app.AllFonts["FONT2"]).pack(pady=(10,10), anchor="center")
+        self.lblTitle: ttk.Label
+        self.btnReset: ttk.Button
+
+        self.homeBtn: Home_TButton
+
+        self.scrollFrame: ScrollFrame
+
+        self.settings_frame_theme: ttk.Frame
+
+        self.ThemeOption_var: tk.StringVar
+        self.theme_radio_buttons: list[ttk.Radiobutton]
+    
+        self.updateSubNote: Autosized_TLabel
+        self.settings_frame_updates: ttk.Frame
+
+        self.UpdateOption_var: tk.StringVar
+
+        self.settings_frame_crack: ttk.Frame
+
+        self.CrackOption_var: tk.StringVar
+        
+        self.settings_frame_steamless: ttk.Frame
+
+        self.Steamless_var: tk.StringVar
+        
+        self.fileNamesFrame: ttk.Frame
+
+        self.SteamApi_var: tk.StringVar
+        self.steamApiEntry: tk.Entry
+        
+        self.SteamApi64_var: tk.StringVar
+        self.steamApiEntry: tk.Entry
+        
+        self.GameEXE_var: tk.StringVar
+        self.steamApiEntry: tk.Entry
+
+        self.BakSuffix_var: tk.StringVar
+        self.steamApiEntry: tk.Entry
+        
+        self.advTextFrame: ttk.Frame
+
+        self.RetryDelay_var: tk.StringVar
+        self.steamApiEntry: tk.Entry
+        
+        self.RetryMax_var: tk.StringVar
+        self.steamApiEntry: tk.Entry
+                
+        self.BypassGameVerif_var: tk.StringVar
+        self.advBypassGameVerif: ttk.Checkbutton
+        
+    def post_init(self):
+        
+        self.lblTitle = ttk.Label(self, text= LBL_TITLESETTINGS, font=self.window.app.AllFonts["FONT2"]).pack(pady=(10,10), anchor='center')
         self.btnReset = ttk.Button(self, text=BTN_RESETSETTINGS, padding=0, command=self.window.app.ResetSettingsButton).pack(pady=(0,0), anchor="center")
 
-        self.homeBtn = Home_TButton(self, height=24, width=24)
-        self.homeBtn.place(x=2, y=2, anchor="nw")
+        self.homeBtn = Home_TButton(self, 24, height=24, width=24)
+        self.homeBtn.place(x=4, y=4, anchor="nw")
 
         self.scrollFrame = ScrollFrame(self)
 
         # Theme options (ThemeOption)
         ttk.Label(self.scrollFrame.viewPort, text=LBL_THEME, font=self.window.app.AllFonts["FONT3"], padding=0).pack(padx=(6, 0), pady=(10,0), anchor="w")
-        settings_frame_theme = ttk.Frame(self.scrollFrame.viewPort)
-        settings_frame_theme.pack(padx=(15, 0), pady=(0, 0), anchor="w", fill='x')
+        self.settings_frame_theme = ttk.Frame(self.scrollFrame.viewPort)
+        self.settings_frame_theme.pack(padx=(15, 0), pady=(0, 0), anchor="w", fill='x')
 
         # Radios
-        global ThemeOption_var
-        ThemeOption_var = tk.StringVar()
-        ThemeOption_var.set(self.window.app.config["Preferences"]["ThemeOption"])
+        self.ThemeOption_var = tk.StringVar()
+        self.ThemeOption_var.set(self.window.app.config["Preferences"]["ThemeOption"])
 
         # Display subset of themes that correspond to the
         # typical 'light', 'dark', and 'black' theme options
@@ -226,129 +258,125 @@ class SettingsPage(tk.Frame):
         self.theme_radio_buttons = []
         for themeIdx, themeKey in enumerate(tuple(self.window.app.GetThemes().keys())):
             radiobtn = ttk.Radiobutton(
-                settings_frame_theme, text=f"{themeKey}\n({self.window.app.ThemeAliases[themeIdx]})", variable=ThemeOption_var,
-                value=themeKey, command=lambda: self.window.app.UpdateConfAndUI("Preferences", "ThemeOption", ThemeOption_var.get())
+                self.settings_frame_theme, text=f"{themeKey}\n({self.window.app.ThemeAliases[themeIdx]})", variable=self.ThemeOption_var,
+                value=themeKey, command=lambda: self.window.app.UpdateConfAndUI("Preferences", "ThemeOption", self.ThemeOption_var.get())
             )
             self.theme_radio_buttons.append(radiobtn)
             radiobtn.grid(padx=(4,4), pady=(2,2), row=0, column=themeRow, sticky="")
             ##print(f"{themeRow} {themeCol}")
             themeRow += 1
-        settings_frame_theme.grid_columnconfigure(tuple(range(3)), weight=1, minsize=100)
-        settings_frame_theme.grid_rowconfigure(tuple(range(3)), weight=1)
+        self.settings_frame_theme.grid_columnconfigure(tuple(range(3)), weight=1, minsize=100)
+        self.settings_frame_theme.grid_rowconfigure(tuple(range(3)), weight=1)
 
         # Update options (UpdateOption)
         ttk.Label(self.scrollFrame.viewPort, text=LBL_UPDATES, font=self.window.app.AllFonts["FONT3"], padding=0).pack(padx=(6, 0), pady=(10,0), anchor="w")
-        updateSubNote = Autosized_TLabel(self.scrollFrame.viewPort, self.window.app.AllFonts["FONT4"], foreground="#575757", text=LBL_UPDATESDESC)
-        updateSubNote.pack(padx=(0, 6), pady=(0,0), anchor="w", fill="both", side="top", expand=True)
-        settings_frame_updates = ttk.Frame(self.scrollFrame.viewPort)
-        settings_frame_updates.pack(padx=(15, 0), pady=(0, 0), anchor="w")
+        self.updateSubNote = Autosized_TLabel(self.scrollFrame.viewPort, self.window.app.AllFonts["FONT4"], foreground="#575757", text=LBL_UPDATESDESC)
+        self.updateSubNote.pack(padx=(0, 6), pady=(0,0), anchor="w", fill="both", side="top", expand=True)
+        self.settings_frame_updates = ttk.Frame(self.scrollFrame.viewPort)
+        self.settings_frame_updates.pack(padx=(15, 0), pady=(0, 0), anchor="w")
 
         ## Radio
-        global UpdateOption_var
-        UpdateOption_var = tk.StringVar()
-        UpdateOption_var.set(self.window.app.config["Preferences"]["UpdateOption"])
-        ttk.Radiobutton(settings_frame_updates, text=RADIOBTN_UPDATECHECKNO, variable=UpdateOption_var, value="0", command=lambda: self.window.app.UpdateConfigKey("Preferences", "UpdateOption", UpdateOption_var.get())).grid(sticky="w")
-        ttk.Radiobutton(settings_frame_updates, text=RADIOBTN_UPDATECHECKAUTO, variable=UpdateOption_var, value="1", command=lambda: self.window.app.UpdateConfigKey("Preferences", "UpdateOption", UpdateOption_var.get())).grid(sticky="w")
+        self.UpdateOption_var = tk.StringVar()
+        self.UpdateOption_var.set(self.window.app.config["Preferences"]["UpdateOption"])
+        ttk.Radiobutton(self.settings_frame_updates, text=RADIOBTN_UPDATECHECKNO, variable=self.UpdateOption_var, value="0", command=lambda: self.window.app.UpdateConfigKey("Preferences", "UpdateOption", self.UpdateOption_var.get())).grid(sticky="w")
+        ttk.Radiobutton(self.settings_frame_updates, text=RADIOBTN_UPDATECHECKAUTO, variable=self.UpdateOption_var, value="1", command=lambda: self.window.app.UpdateConfigKey("Preferences", "UpdateOption", self.UpdateOption_var.get())).grid(sticky="w")
 
         # Crack approach (CrackOption)
         ttk.Label(self.scrollFrame.viewPort, text=LBL_CRACKMETHOD, font=self.window.app.AllFonts["FONT3"], padding=0).pack(padx=(6, 0), pady=(10,0), anchor="w")
-        settings_frame1 = ttk.Frame(self.scrollFrame.viewPort)
-        settings_frame1.pack(padx=(15, 0), pady=(0, 0), anchor="w", fill='x', expand=True)
+        self.settings_frame_crack = ttk.Frame(self.scrollFrame.viewPort)
+        self.settings_frame_crack.pack(padx=(15, 0), pady=(0, 0), anchor="w", fill='x', expand=True)
 
         ## Radio
-        global CrackOption_var
-        CrackOption_var = tk.StringVar()
-        CrackOption_var.set(self.window.app.config["Preferences"]["CrackOption"])
-        ttk.Radiobutton(settings_frame1, text=RADIOBTN_CRACKAUTO, variable=CrackOption_var, value="0", command=lambda: self.window.app.UpdateConfigKey("Preferences", "CrackOption", CrackOption_var.get())).pack(anchor="w", pady=0)
-        ttk.Radiobutton(settings_frame1, text="Alternate Method 1", variable=CrackOption_var, value="1", command=lambda: self.window.app.UpdateConfigKey("Preferences", "CrackOption", CrackOption_var.get())).pack(anchor="w", pady=0)
-        Autosized_TLabel(settings_frame1, text=RADIOBTN_CRACKCONFIGDLLGAMEDIR, font=self.window.app.AllFonts["FONT4"], foreground="#575757").pack(anchor="w", fill='x', expand=True, pady=0)
-        ttk.Radiobutton(settings_frame1, text="Alternate Method 2", variable=CrackOption_var, value="2", command=lambda: self.window.app.UpdateConfigKey("Preferences", "CrackOption", CrackOption_var.get())).pack(anchor="w", pady=0)
-        Autosized_TLabel(settings_frame1, text=RADIOBTN_CRACKCONFIGDLLGAMEDIR, font=self.window.app.AllFonts["FONT4"], foreground="#575757").pack(anchor="w", fill='x', expand=True, pady=0)
+        self.CrackOption_var = tk.StringVar()
+        self.CrackOption_var.set(self.window.app.config["Preferences"]["CrackOption"])
+        ttk.Radiobutton(self.settings_frame_crack, text=RADIOBTN_CRACKAUTO, variable=self.CrackOption_var, value="0", command=lambda: self.window.app.UpdateConfigKey("Preferences", "CrackOption", self.CrackOption_var.get())).pack(anchor="w", pady=0)
+        ttk.Radiobutton(self.settings_frame_crack, text="Alternate Method 1", variable=self.CrackOption_var, value="1", command=lambda: self.window.app.UpdateConfigKey("Preferences", "CrackOption", self.rackOption_var.get())).pack(anchor="w", pady=0)
+        Autosized_TLabel(self.settings_frame_crack, text=RADIOBTN_CRACKCONFIGDLLGAMEDIR, font=self.window.app.AllFonts["FONT4"], foreground="#575757").pack(anchor="w", fill='x', expand=True, pady=0)
+        ttk.Radiobutton(self.settings_frame_crack, text="Alternate Method 2", variable=self.CrackOption_var, value="2", command=lambda: self.window.app.UpdateConfigKey("Preferences", "CrackOption", self.CrackOption_var.get())).pack(anchor="w", pady=0)
+        Autosized_TLabel(self.settings_frame_crack, text=RADIOBTN_CRACKCONFIGDLLGAMEDIR, font=self.window.app.AllFonts["FONT4"], foreground="#575757").pack(anchor="w", fill='x', expand=True, pady=0)
 
         # Steamless (Steamless)
         ttk.Label(self.scrollFrame.viewPort, text=LBL_STEAMLESS, font=self.window.app.AllFonts["FONT3"], padding=0).pack(padx=(6, 0), pady=(10,0), anchor="w")
         Autosized_TLabel(self.scrollFrame.viewPort, text=LBL_STEAMLESSDESC, font=self.window.app.AllFonts["FONT4"], padding=0, foreground="#575757").pack(padx=(6, 0), pady=(0,0), anchor="w", fill='x', expand=True)
 
-        settings_frame2 = ttk.Frame(self.scrollFrame.viewPort)
-        settings_frame2.pack(padx=(15, 0), pady=(0, 10), anchor="w")
+        self.settings_frame_steamless = ttk.Frame(self.scrollFrame.viewPort)
+        self.settings_frame_steamless.pack(padx=(15, 0), pady=(0, 10), anchor="w")
 
         ## Radio
-        global Steamless_var
-        Steamless_var = tk.StringVar()
-        Steamless_var.set(self.window.app.config["Preferences"]["Steamless"])
-        ttk.Radiobutton(settings_frame2, text=RADIOBTN_STEAMLESSNO, variable=Steamless_var, value="0", command=lambda: self.window.app.UpdateConfigKey("Preferences", "Steamless", Steamless_var.get())).grid(row=0, column=0, sticky="w")
-        ttk.Radiobutton(settings_frame2, text=RADIOBTN_STEAMLESSYES, variable=Steamless_var, value="1", command=lambda: self.window.app.UpdateConfigKey("Preferences", "Steamless", Steamless_var.get())).grid(row=1, column=0, sticky="w")
+        self.Steamless_var = tk.StringVar()
+        self.Steamless_var.set(self.window.app.config["Preferences"]["Steamless"])
+        ttk.Radiobutton(self.settings_frame_steamless, text=RADIOBTN_STEAMLESSNO, variable=self.Steamless_var, value="0", command=lambda: self.window.app.UpdateConfigKey("Preferences", "Steamless", self.Steamless_var.get())).grid(row=0, column=0, sticky="w")
+        ttk.Radiobutton(self.settings_frame_steamless, text=RADIOBTN_STEAMLESSYES, variable=self.Steamless_var, value="1", command=lambda: self.window.app.UpdateConfigKey("Preferences", "Steamless", self.Steamless_var.get())).grid(row=1, column=0, sticky="w")
 
         # FileNames
         ttk.Label(self.scrollFrame.viewPort, text=LBL_FILENAMES, font=self.window.app.AllFonts["FONT3"], padding=0).pack(padx=(6, 0), pady=(10,0), anchor="w")
         ttk.Label(self.scrollFrame.viewPort, text=LBL_FILENAMESDESC, font=self.window.app.AllFonts["FONT4"], padding=0, foreground="#575757", wraplength=600).pack(padx=(6, 0), pady=(0,0), anchor="w")
 
-        fileNamesFrame = ttk.Frame(self.scrollFrame.viewPort)
-        fileNamesFrame.pack(padx=(15, 0), pady=(0, 10), anchor="w", expand=True)
+        self.fileNamesFrame = ttk.Frame(self.scrollFrame.viewPort)
+        self.fileNamesFrame.pack(padx=(15, 0), pady=(0, 10), anchor="w", expand=True)
 
-        tk.Label(fileNamesFrame, text=LBL_APIDLLBAK).grid(row=0, column=0, sticky='w')
-        global SteamApi_var
-        SteamApi_var = tk.StringVar()
-        steamApiEntry = tk.Entry(fileNamesFrame, width=35, textvariable=SteamApi_var)
-        steamApiEntry.grid(row=1, column=0, ipadx=10, ipady=3, padx=(20, 0))
-        SteamApi_var.set(self.window.app.config["FileNames"]["SteamAPI"])
-        ttk.Button(fileNamesFrame, text=BTN_SAVE, padding=3, command=lambda: self.window.app.UpdateFileName("SteamAPI", SteamApi_var)).grid(row=1, column=1, padx=(0, 20), ipadx=10)
+        tk.Label(self.fileNamesFrame, text=LBL_APIDLLBAK).grid(row=0, column=0, sticky='w')
+        self.SteamApi_var = tk.StringVar()
+        self.steamApiEntry = tk.Entry(self.fileNamesFrame, width=35, textvariable=self.SteamApi_var)
+        self.steamApiEntry.grid(row=1, column=0, ipadx=10, ipady=3, padx=(20, 0))
+        self.SteamApi_var.set(self.window.app.config["FileNames"]["SteamAPI"])
+        Canvas_TButton(self.fileNamesFrame, 20, width=20, height=20).setup(24, "./imgs/save.png", lambda: self.window.app.UpdateFileName("SteamAPI", self.SteamApi_var), "./imgs/save-hover.png").grid(row=1, column=1, padx=(0, 0), ipadx=0)
+        ##ttk.Button(self.fileNamesFrame, text="", image=tk.PhotoImage("./imgs/save.png"), padding=3, command=lambda: self.window.app.UpdateFileName("SteamAPI", self.SteamApi_var)).grid(row=1, column=1, padx=(0, 20), ipadx=10)
 
-        tk.Label(fileNamesFrame, text=LBL_API64DLLBAK).grid(row=2, column=0, sticky='w')
-        global SteamApi64_var
-        SteamApi64_var = tk.StringVar()
-        steamApiEntry = tk.Entry(fileNamesFrame, width=35, textvariable=SteamApi64_var)
-        steamApiEntry.grid(row=3, column=0, ipadx=10, ipady=3, padx=(20, 0))
-        SteamApi64_var.set(self.window.app.config["FileNames"]["SteamAPI64"])
-        ttk.Button(fileNamesFrame, text=BTN_SAVE, padding=3, command=lambda: self.window.app.UpdateFileName("SteamAPI64", SteamApi64_var)).grid(row=3, column=1, padx=(0, 20), ipadx=10)
+        tk.Label(self.fileNamesFrame, text=LBL_API64DLLBAK).grid(row=2, column=0, sticky='w')
+        self.SteamApi64_var = tk.StringVar()
+        self.steamApiEntry = tk.Entry(self.fileNamesFrame, width=35, textvariable=self.SteamApi64_var)
+        self.steamApiEntry.grid(row=3, column=0, ipadx=10, ipady=3, padx=(20, 0))
+        self.SteamApi64_var.set(self.window.app.config["FileNames"]["SteamAPI64"])
+        Canvas_TButton(self.fileNamesFrame, 20, width=20, height=20).setup(24, "./imgs/save.png", lambda: self.window.app.UpdateFileName("SteamAPI64", self.SteamApi64_var), "./imgs/save-hover.png").grid(row=3, column=1, padx=(0, 0), ipadx=0)
+        ##ttk.Button(self.fileNamesFrame, text=BTN_SAVE, padding=3, command=lambda: self.window.app.UpdateFileName("SteamAPI64", self.SteamApi64_var)).grid(row=3, column=1, padx=(0, 20), ipadx=10)
 
-        tk.Label(fileNamesFrame, text=LBL_EXESUFFIXBAK).grid(row=4, column=0, sticky='w')
-        global GameEXE_var
-        GameEXE_var = tk.StringVar()
-        steamApiEntry = tk.Entry(fileNamesFrame, width=35, textvariable=GameEXE_var)
-        steamApiEntry.grid(row=5, column=0, ipadx=10, ipady=3, padx=(20, 0))
-        GameEXE_var.set(self.window.app.config["FileNames"]["GameEXE"])
-        ttk.Button(fileNamesFrame, text=BTN_SAVE, padding=3, command=lambda: self.window.app.UpdateFileName("GameEXE", GameEXE_var)).grid(row=5, column=1, padx=(0, 20), ipadx=10)
+        tk.Label(self.fileNamesFrame, text=LBL_EXESUFFIXBAK).grid(row=4, column=0, sticky='w')
+        self.GameEXE_var = tk.StringVar()
+        self.steamApiEntry = tk.Entry(self.fileNamesFrame, width=35, textvariable=self.GameEXE_var)
+        self.steamApiEntry.grid(row=5, column=0, ipadx=10, ipady=3, padx=(20, 0))
+        self.GameEXE_var.set(self.window.app.config["FileNames"]["GameEXE"])
+        Canvas_TButton(self.fileNamesFrame, 20, width=20, height=20).setup(24, "./imgs/save.png", lambda: self.window.app.UpdateFileName("GameEXE", self.GameEXE_var), "./imgs/save-hover.png").grid(row=5, column=1, padx=(0, 0), ipadx=0)
+        ##ttk.Button(self.fileNamesFrame, text=BTN_SAVE, padding=3, command=lambda: self.window.app.UpdateFileName("GameEXE", self.GameEXE_var)).grid(row=5, column=1, padx=(0, 20), ipadx=10)
 
-        tk.Label(fileNamesFrame, text=LBL_OTHERSUFFIXBAK).grid(row=6, column=0, sticky='w')
-        global BakSuffix_var
-        BakSuffix_var = tk.StringVar()
-        steamApiEntry = tk.Entry(fileNamesFrame, width=35, textvariable=BakSuffix_var)
-        steamApiEntry.grid(row=7, column=0, ipadx=10, ipady=3, padx=(20, 0))
-        BakSuffix_var.set(self.window.app.config["FileNames"]["BakSuffix"])
-        ttk.Button(fileNamesFrame, text=BTN_SAVE, padding=3, command=lambda: self.window.app.UpdateFileName("BakSuffix", BakSuffix_var)).grid(row=7, column=1, padx=(0, 20), ipadx=10)
+        tk.Label(self.fileNamesFrame, text=LBL_OTHERSUFFIXBAK).grid(row=6, column=0, sticky='w')
+        self.BakSuffix_var = tk.StringVar()
+        self.steamApiEntry = tk.Entry(self.fileNamesFrame, width=35, textvariable=self.BakSuffix_var)
+        self.steamApiEntry.grid(row=7, column=0, ipadx=10, ipady=3, padx=(20, 0))
+        self.BakSuffix_var.set(self.window.app.config["FileNames"]["BakSuffix"])
+        Canvas_TButton(self.fileNamesFrame, 20, width=20, height=20).setup(24, "./imgs/save.png", lambda: self.window.app.UpdateFileName("BakSuffix", self.BakSuffix_var), "./imgs/save-hover.png").grid(row=7, column=1, padx=(0, 0), ipadx=0)
+        ##ttk.Button(self.fileNamesFrame, text=BTN_SAVE, padding=3, command=lambda: self.window.app.UpdateFileName("BakSuffix", self.BakSuffix_var)).grid(row=7, column=1, padx=(0, 20), ipadx=10)
 
-        fileNamesFrame.grid_columnconfigure(0, weight=50, minsize=120)
+        self.fileNamesFrame.grid_columnconfigure(0, weight=50, minsize=120)
 
         # Advanced
         ttk.Label(self.scrollFrame.viewPort, text=LBL_ADVANCED, font=self.window.app.AllFonts["FONT3"], padding=0).pack(padx=(6, 0), pady=(10,0), anchor="w")
         ttk.Label(self.scrollFrame.viewPort, text=LBL_ADVANCEDDESC, font=self.window.app.AllFonts["FONT4"], padding=0, foreground="#575757", wraplength=300).pack(padx=(6, 0), pady=(0,0), anchor="w")
 
-        advTextFrame = ttk.Frame(self.scrollFrame.viewPort)
-        advTextFrame.pack(padx=(15, 0), pady=(0, 10), anchor="w")
+        self.advTextFrame = ttk.Frame(self.scrollFrame.viewPort)
+        self.advTextFrame.pack(padx=(15, 0), pady=(0, 10), anchor="w")
 
-        tk.Label(advTextFrame, text=LBL_RETRYDELAY).grid(row=0, column=0)
-        global RetryDelay_var
-        RetryDelay_var = tk.StringVar()
-        steamApiEntry = tk.Entry(advTextFrame, width=10, textvariable=RetryDelay_var)
+        tk.Label(self.advTextFrame, text=LBL_RETRYDELAY).grid(row=0, column=0)
+        self.RetryDelay_var = tk.StringVar()
+        steamApiEntry = tk.Entry(self.advTextFrame, width=10, textvariable=self.RetryDelay_var)
         steamApiEntry.grid(row=0, column=1, ipadx=10, ipady=3)
-        RetryDelay_var.set(self.window.app.config["Advanced"]["RetryDelay"])
-        ttk.Button(advTextFrame, text=BTN_SAVE, padding=3, command=lambda: self.window.app.UpdateAdvanced("RetryDelay", RetryDelay_var)).grid(row=0, column=2, ipadx=10)
+        self.RetryDelay_var.set(self.window.app.config["Advanced"]["RetryDelay"])
+        Canvas_TButton(self.advTextFrame, 20, width=20, height=20).setup(24, "./imgs/save.png", lambda: self.window.app.UpdateFileName("RetryDelay", self.RetryDelay_var), "./imgs/save-hover.png").grid(row=0, column=2, padx=(0, 0), ipadx=0)
+        ##ttk.Button(self.advTextFrame, text=BTN_SAVE, padding=3, command=lambda: self.window.app.UpdateAdvanced("RetryDelay", self.RetryDelay_var)).grid(row=0, column=2, ipadx=10)
 
-        tk.Label(advTextFrame, text=LBL_RETRYMAX).grid(row=1, column=0)
-        global RetryMax_var
-        RetryMax_var = tk.StringVar()
-        steamApiEntry = tk.Entry(advTextFrame, width=10, textvariable=RetryMax_var)
-        steamApiEntry.grid(row=1, column=1, ipadx=10, ipady=3)
-        RetryMax_var.set(self.window.app.config["Advanced"]["RetryMax"])
-        ttk.Button(advTextFrame, text=BTN_SAVE, padding=3, command=lambda: self.window.app.UpdateAdvanced("RetryMax", RetryMax_var)).grid(row=1, column=2, ipadx=10)
+        tk.Label(self.advTextFrame, text=LBL_RETRYMAX).grid(row=1, column=0)
+        self.RetryMax_var = tk.StringVar()
+        self.steamApiEntry = tk.Entry(self.advTextFrame, width=10, textvariable=self.RetryMax_var)
+        self.steamApiEntry.grid(row=1, column=1, ipadx=10, ipady=3)
+        self.RetryMax_var.set(self.window.app.config["Advanced"]["RetryMax"])
+        Canvas_TButton(self.advTextFrame, 20, width=20, height=20).setup(24, "./imgs/save.png", lambda: self.window.app.UpdateFileName("RetryMax", self.RetryMax_var), "./imgs/save-hover.png").grid(row=1, column=2, padx=(0, 0), ipadx=0)
+        ##ttk.Button(self.advTextFrame, text=BTN_SAVE, padding=3, command=lambda: self.window.app.UpdateAdvanced("RetryMax", self.RetryMax_var)).grid(row=1, column=2, ipadx=10)
 
-        global BypassGameVerification_var
-        BypassGameVerification_var = tk.StringVar()
-        BypassGameVerification_var.set(self.window.app.config["Advanced"]["BypassGameVerification"])
-        advBypassGameVerification = ttk.Checkbutton(self.scrollFrame.viewPort, text=CHKBOX_BYPASSGAMEVERIF, variable=BypassGameVerification_var, command=lambda: self.window.app.UpdateAdvanced("BypassGameVerification", BypassGameVerification_var))
-        advBypassGameVerification.pack(padx=(15, 0), pady=(0, 10), anchor="w")
-
+        self.BypassGameVerif_var = tk.StringVar()
+        self.BypassGameVerif_var.set(self.window.app.config["Advanced"]["BypassGameVerification"])
+        self.advBypassGameVerif = ttk.Checkbutton(self.scrollFrame.viewPort, text=CHKBOX_BYPASSGAMEVERIF, variable=self.BypassGameVerif_var, command=lambda: self.window.app.UpdateAdvanced("BypassGameVerification", self.BypassGameVerif_var))
+        self.advBypassGameVerif.pack({'padx': (15, 0), 'pady': (0, 10), 'anchor': "w"})
+        
         self.scrollFrame.pack(side="top", fill="both", expand=True)
 
 
@@ -398,11 +426,53 @@ class UpdatePopup(TopLevelWindow):
         self.updateDisplayStatusLabel = ttk.Label(self, text="", font=self.biggerFont, padding=0)
 
 
-class Canvas_TButton(tk.Canvas):
+class CrackListPopup(TopLevelWindow):
     def __init__(self, *args, **kwargs):
-        tk.Canvas.__init__(self, *args, **kwargs)
-        self.buttonSize = 24
+        TopLevelWindow.__init__(self, *args, **kwargs)
+        
+        self.title(TITLE_CRACKS)
+        self.resizable(False, False)
+        
+        self.biggerFont = self.app.AllFonts["DEFAULT_FONT"].copy().config(size=10)
+        
+        self.lblTitle: ttk.Label
+        self.btnReset: ttk.Button
+        
+        self.scrollFrame: ScrollFrame
+        self.lblSelectedCrack: ttk.Label
+        self.settingsframe_crack: ttk.Frame
+        self.SelectedCrack_var: tk.StringVar
+        self.optCrack: ttk.Radiobutton
+        self.spacerBottom: tk.Label
+        
+    
+    def post_init(self):
+        
+        self.scrollFrame = ScrollFrame(self)
+        self.lblTitle = ttk.Label(self, text=LBL_CRACKLIST, font=self.app.AllFonts["FONT2"]).pack(pady=(10,10), anchor="center")
+        self.btnReset = ttk.Button(self, text=BTN_RESETCRACK, padding=0, command=self.app.ResetCrackListButton).pack(pady=(0,0), anchor="center")
+        self.lblSelectedCrack = ttk.Label(self.scrollFrame.viewPort, text=LBL_SELECTEDCRACK, font=self.app.AllFonts["FONT3"], padding=0).pack(padx=(6, 0), pady=(10,0), anchor="w")
+        self.settingsframe_crack = ttk.Frame(self.scrollFrame.viewPort).pack(padx=(15, 0), pady=(0, 0), anchor="w", fill='both', side='top', expand=True)
+        self.SelectedCrack_var = tk.StringVar()
+        self.SelectedCrack_var.set(self.app.config["Crack"]["SelectedCrack"])
+        
+        rowNum = 0
+        for k, v in self.app.crackList.items():
+            ttk.Radiobutton(self.settingsframe_crack, text=v[0], variable=self.SelectedCrack_var, value=k, command=lambda: self.app.UpdateSelectedCrack()).pack(anchor="w")
+            rowNum += 1
+            if len(v) > 1: # Contains a description
+                Autosized_TLabel(self.settingsframe_crack, self.app.AllFonts["FONT4"], text=v[1], foreground="#575757", wraplength=700, justify="left").pack(ipadx=20, anchor="w", fill="both", side="top", expand=True)
+                rowNum += 1
+        
+        self.spacerBottom = tk.Label(self.scrollFrame.viewPort, text="").pack()
+        
+        self.scrollFrame.pack(side="top", fill="both", expand=True)
 
+
+class Canvas_TButton(tk.Canvas):
+    def __init__(self, parent, buttonSize: int = 24, *args, **kwargs):
+        tk.Canvas.__init__(self, parent, *args, **kwargs)
+        self.buttonSize = buttonSize
         self.btnImg: tk.PhotoImage = None
         self.btnImg: tk.PhotoImage = None
         self.btnImg_Hover: tk.PhotoImage = None
@@ -425,6 +495,7 @@ class Canvas_TButton(tk.Canvas):
         match imgType:
             case 'base':
                 self.btnImg = tk.PhotoImage(file=imgPath)
+                print(self.btnImg.width())
                 self.btnImg = self.btnImg.subsample(round(self.btnImg.width() / self.buttonSize / 1.0))
                 self.create_image(self.buttonSize / 2.0, self.buttonSize / 2.0, anchor="center", image=self.btnImg)
                 return self.btnImg
@@ -445,6 +516,7 @@ class Canvas_TButton(tk.Canvas):
             self.btnImg_Hover = self.setImage('hover', imagePath_hover)
         if (func_on_click is not None):
             self.setup_ClickHandler(func_on_click)
+        return self
 
 
 class Autosized_TLabel(tk.Label):
@@ -481,23 +553,23 @@ class Autosized_TLabel(tk.Label):
 
 
 class Settings_TButton(Canvas_TButton):
-    def __init__(self, *args, **kwargs):
-        Canvas_TButton.__init__(self, *args, **kwargs)
+    def __init__(self, buttonSize: int, *args, **kwargs):
+        Canvas_TButton.__init__(self, buttonSize, *args, **kwargs)
         self.setup(
             self.buttonSize,
-            "./imgs/windows_settings_icon.png",
+            "./imgs/Cog_x96.png",
             None,
-            "./imgs/windows_settings_icon-hover.png"
+            "./imgs/Cog-hover_x96.png"
         )
 
 
 class Home_TButton(Canvas_TButton):
-    def __init__(self, *args, **kwargs):
-        Canvas_TButton.__init__(self, *args, **kwargs)
+    def __init__(self, buttonSize: int, *args, **kwargs):
+        Canvas_TButton.__init__(self, buttonSize, *args, **kwargs)
         self.setup(
             self.buttonSize,
-            "./imgs/back_64.png",
+            "./imgs/Back_x96.png",
             None,
-            "./imgs/back_64_hover.png",
+            "./imgs/Back-hover_x96.png",
         )
 

@@ -660,23 +660,19 @@ try: # Handles Python errors to write them to a log file so they can be reported
         def ResetSettingsButton(self):
             self.ResetConfig(1)
             
-            from tk_gui import \
-                GameEXE_var, RetryMax_var, SteamApi_var, BakSuffix_var, \
-                Steamless_var, RetryDelay_var, SteamApi64_var, CrackOption_var, \
-                ThemeOption_var, UpdateOption_var, BypassGameVerification_var
-
             # Update the radio buttons values
-            ThemeOption_var.set(self.config["Preferences"]["ThemeOption"])
-            UpdateOption_var.set(self.config["Preferences"]["UpdateOption"])
-            CrackOption_var.set(self.config["Preferences"]["CrackOption"])
-            Steamless_var.set(self.config["Preferences"]["Steamless"])
-            SteamApi_var.set(self.config["FileNames"]["SteamAPI"])
-            SteamApi64_var.set(self.config["FileNames"]["SteamAPI64"])
-            GameEXE_var.set(self.config["FileNames"]["GameEXE"])
-            BakSuffix_var.set(self.config["FileNames"]["BakSuffix"])
-            RetryDelay_var.set(self.config["Advanced"]["RetryDelay"])
-            RetryMax_var.set(self.config["Advanced"]["RetryMax"])
-            BypassGameVerification_var.set(self.config["Advanced"]["BypassGameVerification"])
+            settingsPage = self.main.settingsPage
+            settingsPage.ThemeOption_var.set(self.config["Preferences"]["ThemeOption"])
+            settingsPage.UpdateOption_var.set(self.config["Preferences"]["UpdateOption"])
+            settingsPage.CrackOption_var.set(self.config["Preferences"]["CrackOption"])
+            settingsPage.Steamless_var.set(self.config["Preferences"]["Steamless"])
+            settingsPage.SteamApi_var.set(self.config["FileNames"]["SteamAPI"])
+            settingsPage.SteamApi64_var.set(self.config["FileNames"]["SteamAPI64"])
+            settingsPage.GameEXE_var.set(self.config["FileNames"]["GameEXE"])
+            settingsPage.BakSuffix_var.set(self.config["FileNames"]["BakSuffix"])
+            settingsPage.RetryDelay_var.set(self.config["Advanced"]["RetryDelay"])
+            settingsPage.RetryMax_var.set(self.config["Advanced"]["RetryMax"])
+            settingsPage.BypassGameVerification_var.set(self.config["Advanced"]["BypassGameVerification"])
 
         # ----- Crack List -----
 
@@ -693,6 +689,12 @@ try: # Handles Python errors to write them to a log file so they can be reported
         }
 
         def DisplayCrackList(self):
+            from tk_gui import CrackListPopup
+            global cracklistDisplay
+            cracklistDisplay = CrackListPopup(app=app)
+            cracklistDisplay.post_init()
+            cracklistDisplay.grab_set()
+            """
             from tk_gui import Autosized_TLabel
             top = tk.Toplevel(self.main)
             top.title(f"SteamAutoCracker GUI v{VERSION} - Crack List")
@@ -728,9 +730,10 @@ try: # Handles Python errors to write them to a log file so they can be reported
             scrollFrame.pack(side="top", fill="both", expand=True)
 
             top.grab_set() # Catches all interactions, prevents the user from interacting with the root window
-
+            """
+            
         def UpdateSelectedCrack(self):
-            value = SelectedCrack_var.get()
+            value = cracklistDisplay.SelectedCrack_var.get()
             self.UpdateConfigKey("Crack", "SelectedCrack", value)
             self.UpdateSelectedCrackDisplay()
 
@@ -741,7 +744,8 @@ try: # Handles Python errors to write them to a log file so they can be reported
             self.ResetConfig(2)
 
             # Update the radio buttons values
-            SelectedCrack_var.set(self.config["Crack"]["SelectedCrack"])
+            
+            cracklistDisplay.SelectedCrack_var.set(self.config["Crack"]["SelectedCrack"])
 
             # Update the root button's text
             self.UpdateSelectedCrackDisplay()

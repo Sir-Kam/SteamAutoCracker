@@ -1,11 +1,16 @@
 
+import tkinter.font
+import tkinter.ttk
 import traceback
 import typing
 
 ## Used for theming/coloring configuration for the UI
-import ttkbootstrap as tk
+import ttkbootstrap as tkb
 
-from tkinter import ttk, font
+tk = tkb.ttk
+
+import tkinter as tkinter
+from tkinter import ttk, font, Tk
 from tkinterdnd2 import TkinterDnD
 from tk_scroll_frame import ScrollFrame
 
@@ -90,7 +95,7 @@ class MainPage(tk.Frame):
         self.selectCrackButton: ttk.Button
         self.crackGameButton: ttk.Button
         
-        self.logs_text: tk.Text
+        self.logs_text: tkinter.Text
 
     def post_init(self):
         self.lblTitle = ttk.Label(self, text=TITLE_MAIN, font=self.window.app.AllFonts["FONT2"], padding=0).pack(pady=(10, 0), anchor="center")
@@ -162,7 +167,7 @@ class MainPage(tk.Frame):
         #tk.Label(root, text="").pack()
 
         # Logs scroll text widget
-        self.logs_text = tk.Text(self, height=10, width=100, font='TkFixedFont')
+        self.logs_text = tkinter.Text(self, height=10, width=100, font='TkFixedFont')
         self.logs_text.pack(pady=10, padx=10, fill='both', side='bottom', expand=True)
 
         text = f"{TITLE_MAIN} by {OPCREDIT}"
@@ -171,7 +176,7 @@ class MainPage(tk.Frame):
             buf += "-"
 
         self.logs_text.insert("1.0", f"{buf}\n{text}\n{buf}")
-        self.logs_text.config(state=tk.DISABLED) # Prevents users from editing the text inside logs_text
+        self.logs_text.config(state=tkinter.DISABLED) # Prevents users from editing the text inside logs_text
         
         self.scrollFrame.pack(side="top", fill="both", expand=True)
 
@@ -192,45 +197,45 @@ class SettingsPage(tk.Frame):
 
         self.settings_frame_theme: ttk.Frame
 
-        self.ThemeOption_var: tk.StringVar
+        self.ThemeOption_var: tkinter.StringVar
         self.theme_radio_buttons: list[ttk.Radiobutton]
     
         self.updateSubNote: Autosized_TLabel
         self.settings_frame_updates: ttk.Frame
 
-        self.UpdateOption_var: tk.StringVar
+        self.UpdateOption_var: tkinter.StringVar
 
         self.settings_frame_crack: ttk.Frame
 
-        self.CrackOption_var: tk.StringVar
+        self.CrackOption_var: tkinter.StringVar
         
         self.settings_frame_steamless: ttk.Frame
 
-        self.Steamless_var: tk.StringVar
+        self.Steamless_var: tkinter.StringVar
         
         self.fileNamesFrame: ttk.Frame
 
-        self.SteamApi_var: tk.StringVar
+        self.SteamApi_var: tkinter.StringVar
         self.steamApiEntry: tk.Entry
         
-        self.SteamApi64_var: tk.StringVar
+        self.SteamApi64_var: tkinter.StringVar
         self.steamApiEntry: tk.Entry
         
-        self.GameEXE_var: tk.StringVar
+        self.GameEXE_var: tkinter.StringVar
         self.steamApiEntry: tk.Entry
 
-        self.BakSuffix_var: tk.StringVar
+        self.BakSuffix_var: tkinter.StringVar
         self.steamApiEntry: tk.Entry
         
         self.advTextFrame: ttk.Frame
 
-        self.RetryDelay_var: tk.StringVar
+        self.RetryDelay_var: tkinter.StringVar
         self.steamApiEntry: tk.Entry
         
-        self.RetryMax_var: tk.StringVar
+        self.RetryMax_var: tkinter.StringVar
         self.steamApiEntry: tk.Entry
                 
-        self.BypassGameVerif_var: tk.StringVar
+        self.BypassGameVerif_var: tkinter.StringVar
         self.advBypassGameVerif: ttk.Checkbutton
         
     def post_init(self):
@@ -249,7 +254,7 @@ class SettingsPage(tk.Frame):
         self.settings_frame_theme.pack(padx=(15, 0), pady=(0, 0), anchor="w", fill='x')
 
         # Radios
-        self.ThemeOption_var = tk.StringVar()
+        self.ThemeOption_var = tkinter.StringVar()
         self.ThemeOption_var.set(self.window.app.config["Preferences"]["ThemeOption"])
 
         # Display subset of themes that correspond to the
@@ -276,7 +281,7 @@ class SettingsPage(tk.Frame):
         self.settings_frame_updates.pack(padx=(15, 0), pady=(0, 0), anchor="w")
 
         ## Radio
-        self.UpdateOption_var = tk.StringVar()
+        self.UpdateOption_var = tkinter.StringVar()
         self.UpdateOption_var.set(self.window.app.config["Preferences"]["UpdateOption"])
         ttk.Radiobutton(self.settings_frame_updates, text=RADIOBTN_UPDATECHECKNO, variable=self.UpdateOption_var, value="0", command=lambda: self.window.app.UpdateConfigKey("Preferences", "UpdateOption", self.UpdateOption_var.get())).grid(sticky="w")
         ttk.Radiobutton(self.settings_frame_updates, text=RADIOBTN_UPDATECHECKAUTO, variable=self.UpdateOption_var, value="1", command=lambda: self.window.app.UpdateConfigKey("Preferences", "UpdateOption", self.UpdateOption_var.get())).grid(sticky="w")
@@ -287,7 +292,7 @@ class SettingsPage(tk.Frame):
         self.settings_frame_crack.pack(padx=(15, 0), pady=(0, 0), anchor="w", fill='x', expand=True)
 
         ## Radio
-        self.CrackOption_var = tk.StringVar()
+        self.CrackOption_var = tkinter.StringVar()
         self.CrackOption_var.set(self.window.app.config["Preferences"]["CrackOption"])
         ttk.Radiobutton(self.settings_frame_crack, text=RADIOBTN_CRACKAUTO, variable=self.CrackOption_var, value="0", command=lambda: self.window.app.UpdateConfigKey("Preferences", "CrackOption", self.CrackOption_var.get())).pack(anchor="w", pady=0)
         ttk.Radiobutton(self.settings_frame_crack, text="Alternate Method 1", variable=self.CrackOption_var, value="1", command=lambda: self.window.app.UpdateConfigKey("Preferences", "CrackOption", self.rackOption_var.get())).pack(anchor="w", pady=0)
@@ -303,7 +308,7 @@ class SettingsPage(tk.Frame):
         self.settings_frame_steamless.pack(padx=(15, 0), pady=(0, 10), anchor="w")
 
         ## Radio
-        self.Steamless_var = tk.StringVar()
+        self.Steamless_var = tkinter.StringVar()
         self.Steamless_var.set(self.window.app.config["Preferences"]["Steamless"])
         ttk.Radiobutton(self.settings_frame_steamless, text=RADIOBTN_STEAMLESSNO, variable=self.Steamless_var, value="0", command=lambda: self.window.app.UpdateConfigKey("Preferences", "Steamless", self.Steamless_var.get())).grid(row=0, column=0, sticky="w")
         ttk.Radiobutton(self.settings_frame_steamless, text=RADIOBTN_STEAMLESSYES, variable=self.Steamless_var, value="1", command=lambda: self.window.app.UpdateConfigKey("Preferences", "Steamless", self.Steamless_var.get())).grid(row=1, column=0, sticky="w")
@@ -316,15 +321,15 @@ class SettingsPage(tk.Frame):
         self.fileNamesFrame.pack(padx=(15, 0), pady=(0, 10), anchor="w", expand=True)
 
         tk.Label(self.fileNamesFrame, text=LBL_APIDLLBAK).grid(row=0, column=0, sticky='w')
-        self.SteamApi_var = tk.StringVar()
+        self.SteamApi_var = tkinter.StringVar()
         self.steamApiEntry = tk.Entry(self.fileNamesFrame, width=35, textvariable=self.SteamApi_var)
         self.steamApiEntry.grid(row=1, column=0, ipadx=10, ipady=3, padx=(20, 0))
         self.SteamApi_var.set(self.window.app.config["FileNames"]["SteamAPI"])
         Canvas_TButton(self.fileNamesFrame, 20, width=20, height=20).setup(24, "./imgs/save.png", lambda: self.window.app.UpdateFileName("SteamAPI", self.SteamApi_var), "./imgs/save-hover.png").grid(row=1, column=1, padx=(0, 0), ipadx=0)
-        ##ttk.Button(self.fileNamesFrame, text="", image=tk.PhotoImage("./imgs/save.png"), padding=3, command=lambda: self.window.app.UpdateFileName("SteamAPI", self.SteamApi_var)).grid(row=1, column=1, padx=(0, 20), ipadx=10)
+        ##ttk.Button(self.fileNamesFrame, text="", image=tkinter.PhotoImage("./imgs/save.png"), padding=3, command=lambda: self.window.app.UpdateFileName("SteamAPI", self.SteamApi_var)).grid(row=1, column=1, padx=(0, 20), ipadx=10)
 
         tk.Label(self.fileNamesFrame, text=LBL_API64DLLBAK).grid(row=2, column=0, sticky='w')
-        self.SteamApi64_var = tk.StringVar()
+        self.SteamApi64_var = tkinter.StringVar()
         self.steamApiEntry = tk.Entry(self.fileNamesFrame, width=35, textvariable=self.SteamApi64_var)
         self.steamApiEntry.grid(row=3, column=0, ipadx=10, ipady=3, padx=(20, 0))
         self.SteamApi64_var.set(self.window.app.config["FileNames"]["SteamAPI64"])
@@ -332,7 +337,7 @@ class SettingsPage(tk.Frame):
         ##ttk.Button(self.fileNamesFrame, text=BTN_SAVE, padding=3, command=lambda: self.window.app.UpdateFileName("SteamAPI64", self.SteamApi64_var)).grid(row=3, column=1, padx=(0, 20), ipadx=10)
 
         tk.Label(self.fileNamesFrame, text=LBL_EXESUFFIXBAK).grid(row=4, column=0, sticky='w')
-        self.GameEXE_var = tk.StringVar()
+        self.GameEXE_var = tkinter.StringVar()
         self.steamApiEntry = tk.Entry(self.fileNamesFrame, width=35, textvariable=self.GameEXE_var)
         self.steamApiEntry.grid(row=5, column=0, ipadx=10, ipady=3, padx=(20, 0))
         self.GameEXE_var.set(self.window.app.config["FileNames"]["GameEXE"])
@@ -340,7 +345,7 @@ class SettingsPage(tk.Frame):
         ##ttk.Button(self.fileNamesFrame, text=BTN_SAVE, padding=3, command=lambda: self.window.app.UpdateFileName("GameEXE", self.GameEXE_var)).grid(row=5, column=1, padx=(0, 20), ipadx=10)
 
         tk.Label(self.fileNamesFrame, text=LBL_OTHERSUFFIXBAK).grid(row=6, column=0, sticky='w')
-        self.BakSuffix_var = tk.StringVar()
+        self.BakSuffix_var = tkinter.StringVar()
         self.steamApiEntry = tk.Entry(self.fileNamesFrame, width=35, textvariable=self.BakSuffix_var)
         self.steamApiEntry.grid(row=7, column=0, ipadx=10, ipady=3, padx=(20, 0))
         self.BakSuffix_var.set(self.window.app.config["FileNames"]["BakSuffix"])
@@ -357,7 +362,7 @@ class SettingsPage(tk.Frame):
         self.advTextFrame.pack(padx=(15, 0), pady=(0, 10), anchor="w")
 
         tk.Label(self.advTextFrame, text=LBL_RETRYDELAY).grid(row=0, column=0)
-        self.RetryDelay_var = tk.StringVar()
+        self.RetryDelay_var = tkinter.StringVar()
         steamApiEntry = tk.Entry(self.advTextFrame, width=10, textvariable=self.RetryDelay_var)
         steamApiEntry.grid(row=0, column=1, ipadx=10, ipady=3)
         self.RetryDelay_var.set(self.window.app.config["Advanced"]["RetryDelay"])
@@ -365,14 +370,14 @@ class SettingsPage(tk.Frame):
         ##ttk.Button(self.advTextFrame, text=BTN_SAVE, padding=3, command=lambda: self.window.app.UpdateAdvanced("RetryDelay", self.RetryDelay_var)).grid(row=0, column=2, ipadx=10)
 
         tk.Label(self.advTextFrame, text=LBL_RETRYMAX).grid(row=1, column=0)
-        self.RetryMax_var = tk.StringVar()
+        self.RetryMax_var = tkinter.StringVar()
         self.steamApiEntry = tk.Entry(self.advTextFrame, width=10, textvariable=self.RetryMax_var)
         self.steamApiEntry.grid(row=1, column=1, ipadx=10, ipady=3)
         self.RetryMax_var.set(self.window.app.config["Advanced"]["RetryMax"])
         Canvas_TButton(self.advTextFrame, 20, width=20, height=20).setup(24, "./imgs/save.png", lambda: self.window.app.UpdateFileName("RetryMax", self.RetryMax_var), "./imgs/save-hover.png").grid(row=1, column=2, padx=(0, 0), ipadx=0)
         ##ttk.Button(self.advTextFrame, text=BTN_SAVE, padding=3, command=lambda: self.window.app.UpdateAdvanced("RetryMax", self.RetryMax_var)).grid(row=1, column=2, ipadx=10)
 
-        self.BypassGameVerif_var = tk.StringVar()
+        self.BypassGameVerif_var = tkinter.StringVar()
         self.BypassGameVerif_var.set(self.window.app.config["Advanced"]["BypassGameVerification"])
         self.advBypassGameVerif = ttk.Checkbutton(self.scrollFrame.viewPort, text=CHKBOX_BYPASSGAMEVERIF, variable=self.BypassGameVerif_var, command=lambda: self.window.app.UpdateAdvanced("BypassGameVerification", self.BypassGameVerif_var))
         self.advBypassGameVerif.pack({'padx': (15, 0), 'pady': (0, 10), 'anchor': "w"})
@@ -380,9 +385,9 @@ class SettingsPage(tk.Frame):
         self.scrollFrame.pack(side="top", fill="both", expand=True)
 
 
-class TopLevelWindow(tk.Toplevel):
+class TopLevelWindow(tkinter.Toplevel):
     def __init__(self, app: App, *args, **kwargs):
-        tk.Toplevel.__init__(self, *args, **kwargs)
+        tkinter.Toplevel.__init__(self, *args, **kwargs)
         self.app = app
 
 
@@ -427,8 +432,8 @@ class UpdatePopup(TopLevelWindow):
 
 
 class CrackListPopup(TopLevelWindow):
-    def __init__(self, *args, **kwargs):
-        TopLevelWindow.__init__(self, *args, **kwargs)
+    def __init__(self, app: App, *args, **kwargs):
+        TopLevelWindow.__init__(self, app, *args, **kwargs)
         
         self.title(TITLE_CRACKS)
         self.resizable(False, False)
@@ -441,7 +446,7 @@ class CrackListPopup(TopLevelWindow):
         self.scrollFrame: ScrollFrame
         self.lblSelectedCrack: ttk.Label
         self.settingsframe_crack: ttk.Frame
-        self.SelectedCrack_var: tk.StringVar
+        self.SelectedCrack_var: tkinter.StringVar
         self.optCrack: ttk.Radiobutton
         self.spacerBottom: tk.Label
         
@@ -453,7 +458,7 @@ class CrackListPopup(TopLevelWindow):
         self.btnReset = ttk.Button(self, text=BTN_RESETCRACK, padding=0, command=self.app.ResetCrackListButton).pack(pady=(0,0), anchor="center")
         self.lblSelectedCrack = ttk.Label(self.scrollFrame.viewPort, text=LBL_SELECTEDCRACK, font=self.app.AllFonts["FONT3"], padding=0).pack(padx=(6, 0), pady=(10,0), anchor="w")
         self.settingsframe_crack = ttk.Frame(self.scrollFrame.viewPort).pack(padx=(15, 0), pady=(0, 0), anchor="w", fill='both', side='top', expand=True)
-        self.SelectedCrack_var = tk.StringVar()
+        self.SelectedCrack_var = tkinter.StringVar()
         self.SelectedCrack_var.set(self.app.config["Crack"]["SelectedCrack"])
         
         rowNum = 0
@@ -469,14 +474,14 @@ class CrackListPopup(TopLevelWindow):
         self.scrollFrame.pack(side="top", fill="both", expand=True)
 
 
-class Canvas_TButton(tk.Canvas):
+class Canvas_TButton(tkinter.Canvas):
     def __init__(self, parent, buttonSize: int = 24, *args, **kwargs):
-        tk.Canvas.__init__(self, parent, *args, **kwargs)
+        tkinter.Canvas.__init__(self, parent, *args, **kwargs)
         self.buttonSize = buttonSize
-        self.btnImg: tk.PhotoImage = None
-        self.btnImg: tk.PhotoImage = None
-        self.btnImg_Hover: tk.PhotoImage = None
-        self.btnImg_Hover: tk.PhotoImage = None
+        self.btnImg: tkinter.PhotoImage = None
+        self.btnImg: tkinter.PhotoImage = None
+        self.btnImg_Hover: tkinter.PhotoImage = None
+        self.btnImg_Hover: tkinter.PhotoImage = None
 
         self.bind("<Enter>", self.btn_mouseEvent)
         self.bind("<Leave>", self.btn_mouseEvent)
@@ -491,16 +496,16 @@ class Canvas_TButton(tk.Canvas):
             case "8": # Mouse Leave
                 self.itemconfig(1, image=self.btnImg)
 
-    def setImage(self, imgType: typing.Literal['base', 'hover'], imgPath: str) -> tk.PhotoImage | None:
+    def setImage(self, imgType: typing.Literal['base', 'hover'], imgPath: str) -> tkinter.PhotoImage | None:
         match imgType:
             case 'base':
-                self.btnImg = tk.PhotoImage(file=imgPath)
+                self.btnImg = tkinter.PhotoImage(file=imgPath)
                 print(self.btnImg.width())
                 self.btnImg = self.btnImg.subsample(round(self.btnImg.width() / self.buttonSize / 1.0))
                 self.create_image(self.buttonSize / 2.0, self.buttonSize / 2.0, anchor="center", image=self.btnImg)
                 return self.btnImg
             case 'hover':
-                self.btnImg_Hover = tk.PhotoImage(file=imgPath)
+                self.btnImg_Hover = tkinter.PhotoImage(file=imgPath)
                 self.btnImg_Hover = self.btnImg_Hover.subsample(round(self.btnImg_Hover.width() / self.buttonSize / 1.0))
                 return self.btnImg_Hover
             case _:
@@ -520,7 +525,7 @@ class Canvas_TButton(tk.Canvas):
 
 
 class Autosized_TLabel(tk.Label):
-    def __init__(self, parent: tk.tk.Misc | None, font: tk.font.Font, *args, **kwargs):
+    def __init__(self, parent: tkinter.Misc | None, font: font.Font, *args, **kwargs):
         tk.Label.__init__(self, parent, *args, font=font, **kwargs)
         self.parent = parent
         self.font = font

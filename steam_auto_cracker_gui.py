@@ -22,7 +22,7 @@ try: # Handles Python errors to write them to a log file so they can be reported
     #from tk_gui import *
     ## Used for theming/coloring configuration for the UI
     #import ttkbootstrap
-    import ttkbootstrap as tk
+    import ttkbootstrap as ttk
     from tk_scroll_frame import ScrollFrame
    
 
@@ -42,7 +42,7 @@ try: # Handles Python errors to write them to a log file so they can be reported
             self.config: configparser.ConfigParser
             
             # Style ttk
-            self.style: tk.Style
+            self.style: ttk.Style
             
             
             AllFonts: dict[str, font.Font] = {
@@ -55,7 +55,7 @@ try: # Handles Python errors to write them to a log file so they can be reported
             
             self.AllFonts = AllFonts
             
-            self.AllThemes: dict[str, dict[str, typing.Any]] = tk.themes.standard.STANDARD_THEMES
+            self.AllThemes: dict[str, dict[str, typing.Any]] = ttk.themes.standard.STANDARD_THEMES
             self.ThemeFilter = ('cosmo', 'darkly', 'cyborg')
             self.ThemeAliases = ('light', 'dark', 'black')
             self.ThemesSubset = dict([t for t in self.AllThemes.items() if t[0] in self.ThemeFilter])
@@ -83,7 +83,7 @@ try: # Handles Python errors to write them to a log file so they can be reported
             self.main.iconbitmap("./imgs/icon_hashtag.ico")
             
             # Style ttk
-            self.style = tk.Style(theme=self.config["Preferences"]["ThemeOption"])
+            self.style = ttk.Style(theme=self.config["Preferences"]["ThemeOption"])
             self.ApplyStyle()
             
             self.AllFonts["DEFAULT_FONT"] = font.nametofont('TkTextFont')
@@ -176,7 +176,7 @@ try: # Handles Python errors to write them to a log file so they can be reported
                 self.main.mainPage.frameGame2.pack()
 
                 # Update the game name entry with the folder name
-                self.main.mainPage.gameNameEntry.delete(0, tk.END) # Removes the content of the Entry element starting from index 0 to the end
+                self.main.mainPage.gameNameEntry.delete(0, ttk.END) # Removes the content of the Entry element starting from index 0 to the end
                 self.main.mainPage.gameNameEntry.insert(0, folder_name) # Inserts the name of the folder in the Entry element at the start of it (index 0)
 
                 # Show crack frame if game search is done
@@ -191,31 +191,31 @@ try: # Handles Python errors to write them to a log file so they can be reported
         def update_logs(self, log_message):
             global main
             # Get current content
-            current_logs = self.main.mainPage.logs_text.get("1.0", tk.END)
+            current_logs = self.main.mainPage.logs_text.get("1.0", ttk.END)
 
-            self.main.mainPage.logs_text.config(state=tk.NORMAL)  # Enables modification (needed to add content)
+            self.main.mainPage.logs_text.config(state=ttk.NORMAL)  # Enables modification (needed to add content)
             # Delete the current content
-            self.main.mainPage.logs_text.delete("1.0", tk.END)
+            self.main.mainPage.logs_text.delete("1.0", ttk.END)
 
             # Insert the new message at the end with a linebreak
-            self.main.mainPage.logs_text.insert(tk.END, current_logs + log_message)
+            self.main.mainPage.logs_text.insert(ttk.END, current_logs + log_message)
 
             # Scroll the widget to the bottom
             self.main.mainPage.logs_text.yview_moveto(1.0)
 
             # Focus on the end
-            self.main.mainPage.logs_text.see(tk.END)
-            self.main.mainPage.logs_text.config(state=tk.DISABLED)  # Disables modification (prevents the user from writing inside the field)
+            self.main.mainPage.logs_text.see(ttk.END)
+            self.main.mainPage.logs_text.config(state=ttk.DISABLED)  # Disables modification (prevents the user from writing inside the field)
 
         def search_game(self):
-            self.main.mainPage.searchGameButton.config(state=tk.DISABLED) # Prevents the user from starting multiple searches at the same time
+            self.main.mainPage.searchGameButton.config(state=ttk.DISABLED) # Prevents the user from starting multiple searches at the same time
             self.main.mainPage.frameCrack2.pack_forget() # Hide the crack frame
             global gameSearchDone
             gameSearchDone = False
 
             self.main.mainPage.gameFoundStatus.config(text=f"")
             # Disable the ability to change the selected folder
-            self.main.mainPage.selectFolderBtn.config(state=tk.DISABLED)
+            self.main.mainPage.selectFolderBtn.config(state=ttk.DISABLED)
             self.main.mainPage.updateAppListButton.grid_forget()
             self.main.mainPage.update()
 
@@ -223,8 +223,8 @@ try: # Handles Python errors to write them to a log file so they can be reported
             appID = 0
             if self.main.mainPage.gameNameEntry.get() == "":
                 self.update_logs("\n[!] Please enter a valid Name or AppID")
-                self.main.mainPage.searchGameButton.config(state=tk.NORMAL)  # Re-enable the ability to search the game
-                self.main.mainPage.selectFolderButton.config(state=tk.NORMAL) # Re-enable the ability to change the selected folder
+                self.main.mainPage.searchGameButton.config(state=ttk.NORMAL)  # Re-enable the ability to search the game
+                self.main.mainPage.selectFolderButton.config(state=ttk.NORMAL) # Re-enable the ability to change the selected folder
                 return
 
             try:
@@ -236,11 +236,11 @@ try: # Handles Python errors to write them to a log file so they can be reported
                 # We are now on step 3
                 gameSearchDone = True
                 self.main.mainPage.frameCrack2.pack() # Show the crack frame
-                self.main.mainPage.searchGameButton.config(state=tk.NORMAL) # Re-enable the ability to search the game
-                self.main.mainPage.selectFolderBtn.config(state=tk.NORMAL) # Re-enable the ability to change the selected folder
+                self.main.mainPage.searchGameButton.config(state=ttk.NORMAL) # Re-enable the ability to search the game
+                self.main.mainPage.selectFolderBtn.config(state=ttk.NORMAL) # Re-enable the ability to change the selected folder
             else:
-                self.main.mainPage.searchGameButton.config(state=tk.NORMAL) # Re-enable the ability to search the game
-                self.main.mainPage.selectFolderBtn.config(state=tk.NORMAL) # Re-enable the ability to change the selected folder
+                self.main.mainPage.searchGameButton.config(state=ttk.NORMAL) # Re-enable the ability to search the game
+                self.main.mainPage.selectFolderBtn.config(state=ttk.NORMAL) # Re-enable the ability to change the selected folder
 
         def FindInAppList(self, appName):
             self.update_logs("\nImporting and searching the App List, this could take a few seconds if your computer isn't powerful enough.")
@@ -428,10 +428,10 @@ try: # Handles Python errors to write them to a log file so they can be reported
             global appID
 
             # Prevents the user from searching a game or selecting a folder or re-clicking the crack game button
-            self.main.mainPage.selectFolderBtn.config(state=tk.DISABLED)
-            self.main.mainPage.searchGameButton.config(state=tk.DISABLED)
-            self.main.mainPage.selectCrackButton.config(state=tk.DISABLED)
-            self.main.mainPage.crackGameButton.config(state=tk.DISABLED)
+            self.main.mainPage.selectFolderBtn.config(state=ttk.DISABLED)
+            self.main.mainPage.searchGameButton.config(state=ttk.DISABLED)
+            self.main.mainPage.selectCrackButton.config(state=ttk.DISABLED)
+            self.main.mainPage.crackGameButton.config(state=ttk.DISABLED)
 
             self.update_logs("\nSearching Steam API DLLs and cracking them...")
             cracked = False
@@ -617,10 +617,10 @@ try: # Handles Python errors to write them to a log file so they can be reported
             self.ReloadConfig() # Reload the config to remove the overwritten config from config_override.ini
 
             # Now let's remove locks
-            self.main.mainPage.selectFolderBtn.config(state=tk.NORMAL)
-            self.main.mainPage.searchGameButton.config(state=tk.NORMAL)
-            self.main.mainPage.selectCrackButton.config(state=tk.NORMAL)
-            self.main.mainPage.crackGameButton.config(state=tk.NORMAL)
+            self.main.mainPage.selectFolderBtn.config(state=ttk.NORMAL)
+            self.main.mainPage.searchGameButton.config(state=ttk.NORMAL)
+            self.main.mainPage.selectCrackButton.config(state=ttk.NORMAL)
+            self.main.mainPage.crackGameButton.config(state=ttk.NORMAL)
 
 
         # Theming
@@ -834,7 +834,7 @@ try: # Handles Python errors to write them to a log file so they can be reported
         # ---------------------------------------
 
         def CheckUpdates(self):
-            self.main.mainPage.updatesButton.config(text=LBL_SEARCHINGUPDATE, state=tk.DISABLED)
+            self.main.mainPage.updatesButton.config(text=LBL_SEARCHINGUPDATE, state=ttk.DISABLED)
             self.main.mainPage.update()
 
             req = self.SACRequest(GITHUB_LATESTVERSIONJSON, "RetrieveLatestVersionJson").req
@@ -842,14 +842,14 @@ try: # Handles Python errors to write them to a log file so they can be reported
             global latestversion
             latestversion = data["version"]
             if latestversion == VERSION: # The latest stable version is the one we're running
-                self.main.mainPage.updatesButton.config(text=LBL_UPTODATE, state=tk.NORMAL)
+                self.main.mainPage.updatesButton.config(text=LBL_UPTODATE, state=ttk.NORMAL)
                 return
 
             global release_link
             release_link = data["release"]
             release_link = release_link.replace("[VERSION]", latestversion)
 
-            self.main.mainPage.updatesButton.config(text=LBL_OUTDATED, state=tk.NORMAL)
+            self.main.mainPage.updatesButton.config(text=LBL_OUTDATED, state=ttk.NORMAL)
             self.DisplayUpdate()
 
         def DisplayUpdate(self):
@@ -861,9 +861,9 @@ try: # Handles Python errors to write them to a log file so they can be reported
             updateDisplayTop = top
 
         def UpdateSAC(self):
-            updateDisplayTop.updateDisplayButtonUpdate.config(state=tk.DISABLED)
-            updateDisplayTop.updateDisplayButtonCopy.config(state=tk.DISABLED)
-            updateDisplayTop.updateDisplayButtonClose.config(state=tk.DISABLED)
+            updateDisplayTop.updateDisplayButtonUpdate.config(state=ttk.DISABLED)
+            updateDisplayTop.updateDisplayButtonCopy.config(state=ttk.DISABLED)
+            updateDisplayTop.updateDisplayButtonClose.config(state=ttk.DISABLED)
 
             updateDisplayTop.updateDisplayStatusLabel.pack(pady=(0,20), anchor="center")
             updateDisplayTop.updateDisplayStatusLabel.config(text=LBL_DLUPDATERPLSWAIT)
@@ -874,9 +874,9 @@ try: # Handles Python errors to write them to a log file so they can be reported
                 try:
                     os.remove(AUTOUPDATER_EXE)
                 except Exception: # In case the file is locked for example
-                    updateDisplayTop.updateDisplayButtonUpdate.config(state=tk.NORMAL)
-                    updateDisplayTop.updateDisplayButtonCopy.config(state=tk.NORMAL)
-                    updateDisplayTop.updateDisplayButtonClose.config(state=tk.NORMAL)
+                    updateDisplayTop.updateDisplayButtonUpdate.config(state=ttk.NORMAL)
+                    updateDisplayTop.updateDisplayButtonCopy.config(state=ttk.NORMAL)
+                    updateDisplayTop.updateDisplayButtonClose.config(state=ttk.NORMAL)
                     updateDisplayTop.updateDisplayStatusLabel.config(text=LBL_UDATEERROR)
                     self.main.update()
                     return
